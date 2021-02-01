@@ -1,43 +1,52 @@
 package pl.streamsoft.currencyexchange;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 public class CurrencyExchangeFacade {
 
 	private static final String GET_URL = "http://api.nbp.pl/api/exchangerates/rates/A/";
+	private final CloseableHttpClient httpClient = HttpClients.createDefault();
 
 	public BigDecimal exchangeCurrencyToPLN(String currencyCode, BigDecimal value) {
 		BigDecimal rate = getExchangeRate(currencyCode);
-		return value.multiply(rate).setScale(2, RoundingMode.HALF_UP);
+		if(rate!=null) {
+			return value.multiply(rate);
+		}
+		return null;
 	}
 
-	private BigDecimal getExchangeRate(String currency) {
+	private BigDecimal getExchangeRate(String currencyCode) {
 		BigDecimal rate = null;
-		try {
-			URL url = new URL(GET_URL + currency);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.setRequestProperty("Accept", "application/json");
-			if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) { // success
-				BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-				JSONObject response = new JSONObject(in.readLine());
-				JSONObject ratesObject = new JSONObject(response.getJSONArray("rates").get(0).toString());
-				rate = new BigDecimal(ratesObject.get("mid").toString());
-				in.close();
-			} else {
-				System.out.println("GET request not worked");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		HttpGet request = new HttpGet(GET_URL+currencyCode);
+        request.addHeader("Accept", "application/json");
+        try{
+        	CloseableHttpResponse response = httpClient.execute(request);
+            if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            	HttpEntity entity = response.getEntity();
+                if (entity != null) {
+                    String body = EntityUtils.toString(entity);
+                    JSONObject bodyJson = new JSONObject(body);
+    				JSONObject ratesJson = new JSONObject(bodyJson.getJSONArray("rates").get(0).toString());
+    				rate = new BigDecimal(ratesJson.get("mid").toString());
+                } else {
+                	System.out.println("Request doesn't contain entity");
+                }
+            } else {
+            	System.out.println("Request failed. Status code: "+response.getStatusLine().getStatusCode());
+            }
+
+        } catch(Exception e) {
+        	e.printStackTrace();
+        }
 		return rate;
 	}
 }

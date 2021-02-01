@@ -14,6 +14,9 @@ public class Main {
 		sc.close();
 		CurrencyExchangeFacade cef = new CurrencyExchangeFacade();
 		BigDecimal result = cef.exchangeCurrencyToPLN(currencyCode, new BigDecimal(value));
-		System.out.println(result);
+		if(result != null) {
+			System.out.println(result);
+		}
+		
 	}
 }
