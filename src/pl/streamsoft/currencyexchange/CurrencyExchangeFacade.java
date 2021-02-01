@@ -14,9 +14,9 @@ public class CurrencyExchangeFacade {
 
 	private static final String GET_URL = "http://api.nbp.pl/api/exchangerates/rates/A/";
 
-	public BigDecimal exchangeCurrencyToPLN(String currency, BigDecimal value) {
-		BigDecimal rate = getExchangeRate(currency);
-		return value.multiply(rate).setScale(2,RoundingMode.HALF_UP);
+	public BigDecimal exchangeCurrencyToPLN(String currencyCode, BigDecimal value) {
+		BigDecimal rate = getExchangeRate(currencyCode);
+		return value.multiply(rate).setScale(2, RoundingMode.HALF_UP);
 	}
 
 	private BigDecimal getExchangeRate(String currency) {
