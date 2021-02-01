@@ -1,17 +1,12 @@
 package pl.streamsoft.currencyexchange;
 
-import java.io.OutputStream;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class Main {
 
-private static final String GET_URL = "http://api.nbp.pl/api/exchangerates/rates/A/";
-	
 	public static void main(String[] args) {
-		
-
+		CurrencyExchangeFacade cef = new CurrencyExchangeFacade();
+		BigDecimal result = cef.exchangeCurrencyToPLN("USD", new BigDecimal("2.20"));
+		System.out.println(result);
 	}
-
 }
