@@ -18,7 +18,9 @@ public class Main {
 			BigDecimal result = cef.exchangeCurrencyToPLN(currencyCode, value);
 			System.out.println("Your value in PLN: " + result);
 		} catch (IOException e) {
-			System.out.println("Problem occurred during exchanging currency");
+			System.out.println("Getting information from NBP failed. Message: " + e.getMessage());
+		} catch (Exception e) {
+			System.out.println("Exchanging currency failed. Message: " + e.getMessage());
 		}
 	}
 }

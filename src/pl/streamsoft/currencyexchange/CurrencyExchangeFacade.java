@@ -6,7 +6,7 @@ import java.math.RoundingMode;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -20,29 +20,27 @@ public class CurrencyExchangeFacade {
 	private final CloseableHttpClient httpClient = HttpClients.createDefault();
 
 	public BigDecimal exchangeCurrencyToPLN(String currencyCode, BigDecimal value) throws IOException {
-		currencyCode = currencyCode.toUpperCase();
 		BigDecimal rate = getExchangeRateForCurrency(currencyCode);
-		if (rate == null) {
-			throw new IOException("Getting exchange rate failed");
-		}
+		// calculating value with given rate
 		return value.multiply(rate).setScale(2, RoundingMode.HALF_UP);
 	}
 
 	private BigDecimal getExchangeRateForCurrency(String currencyCode) throws IOException {
-		BigDecimal rate = null;
+		// preparing request
 		HttpGet request = new HttpGet(GET_URL + currencyCode);
 		request.addHeader("Accept", "application/json");
 		CloseableHttpResponse response = httpClient.execute(request);
+		// checking if request succeed
 		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-			throw new IOException("Request failed. Status code: " + response.getStatusLine().getStatusCode());
+			throw new HttpResponseException(response.getStatusLine().getStatusCode(),
+					response.getStatusLine().getReasonPhrase());
 		}
+		// getting rate from response body
 		HttpEntity entity = response.getEntity();
-		if (entity != null) {
-			String body = EntityUtils.toString(entity);
-			JSONObject bodyJson = new JSONObject(body);
-			JSONObject ratesJson = new JSONObject(bodyJson.getJSONArray("rates").get(0).toString());
-			rate = new BigDecimal(ratesJson.get("mid").toString());
-		}
+		String body = EntityUtils.toString(entity);
+		JSONObject bodyJson = new JSONObject(body);
+		JSONObject ratesJson = new JSONObject(bodyJson.getJSONArray("rates").get(0).toString());
+		BigDecimal rate = new BigDecimal(ratesJson.get("mid").toString());
 		return rate;
 	}
 }
