@@ -1,9 +1,12 @@
 package pl.streamsoft.currencyexchange;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -16,37 +19,30 @@ public class CurrencyExchangeFacade {
 	private static final String GET_URL = "http://api.nbp.pl/api/exchangerates/rates/A/";
 	private final CloseableHttpClient httpClient = HttpClients.createDefault();
 
-	public BigDecimal exchangeCurrencyToPLN(String currencyCode, BigDecimal value) {
-		BigDecimal rate = getExchangeRate(currencyCode);
-		if(rate!=null) {
-			return value.multiply(rate);
+	public BigDecimal exchangeCurrencyToPLN(String currencyCode, BigDecimal value) throws IOException {
+		currencyCode = currencyCode.toUpperCase();
+		BigDecimal rate = getExchangeRateForCurrency(currencyCode);
+		if (rate == null) {
+			throw new IOException("Getting exchange rate failed");
 		}
-		return null;
+		return value.multiply(rate).setScale(2, RoundingMode.HALF_UP);
 	}
 
-	private BigDecimal getExchangeRate(String currencyCode) {
+	private BigDecimal getExchangeRateForCurrency(String currencyCode) throws IOException {
 		BigDecimal rate = null;
-		HttpGet request = new HttpGet(GET_URL+currencyCode);
-        request.addHeader("Accept", "application/json");
-        try{
-        	CloseableHttpResponse response = httpClient.execute(request);
-            if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            	HttpEntity entity = response.getEntity();
-                if (entity != null) {
-                    String body = EntityUtils.toString(entity);
-                    JSONObject bodyJson = new JSONObject(body);
-    				JSONObject ratesJson = new JSONObject(bodyJson.getJSONArray("rates").get(0).toString());
-    				rate = new BigDecimal(ratesJson.get("mid").toString());
-                } else {
-                	System.out.println("Request doesn't contain entity");
-                }
-            } else {
-            	System.out.println("Request failed. Status code: "+response.getStatusLine().getStatusCode());
-            }
-
-        } catch(Exception e) {
-        	e.printStackTrace();
-        }
+		HttpGet request = new HttpGet(GET_URL + currencyCode);
+		request.addHeader("Accept", "application/json");
+		CloseableHttpResponse response = httpClient.execute(request);
+		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+			throw new IOException("Request failed. Status code: " + response.getStatusLine().getStatusCode());
+		}
+		HttpEntity entity = response.getEntity();
+		if (entity != null) {
+			String body = EntityUtils.toString(entity);
+			JSONObject bodyJson = new JSONObject(body);
+			JSONObject ratesJson = new JSONObject(bodyJson.getJSONArray("rates").get(0).toString());
+			rate = new BigDecimal(ratesJson.get("mid").toString());
+		}
 		return rate;
 	}
 }
