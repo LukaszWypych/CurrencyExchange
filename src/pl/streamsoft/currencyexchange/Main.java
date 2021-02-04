@@ -1,15 +1,9 @@
 package pl.streamsoft.currencyexchange;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Locale;
+import java.util.Date;
 import java.util.Scanner;
-
-import org.apache.http.HttpException;
-import org.apache.http.ParseException;
-import org.json.JSONException;
 
 import pl.streamsoft.currencyexchange.service.CurrencyExchangeServiceNBP;
 
@@ -34,29 +28,11 @@ public class Main {
 		}
 		sc.close();
 		CurrencyExchangeServiceNBP cef = new CurrencyExchangeServiceNBP();
-		try {
-			ExchangedCurrency exchangedCurrency = cef.exchangeCurrencyToPLN(currencyCode, value);
+			ExchangedCurrency exchangedCurrency = cef.exchangeCurrencyToPLN(currencyCode, new Date(), value);
 			String pattern = "dd-MM-yyyy";
 			SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
 			String date = dateFormat.format(exchangedCurrency.getDate());
 			System.out.println("Currency exchanged with the rate on the date "+ date
 			+" is "+exchangedCurrency.getValue());
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (HttpException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (java.text.ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 	}
 }

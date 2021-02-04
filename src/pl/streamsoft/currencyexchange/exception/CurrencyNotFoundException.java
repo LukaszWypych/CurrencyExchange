@@ -1,8 +1,6 @@
 package pl.streamsoft.currencyexchange.exception;
 
-import org.apache.http.HttpException;
-
-public class CurrencyNotFoundException extends HttpException {
+public class CurrencyNotFoundException extends ExchangeCurrencyHttpException {
 
 	/**
 	 * 
