@@ -23,6 +23,5 @@ public final class ExchangeRateUtils {
 		} catch (ParseException | JSONException e) {
 			throw new ParsingExchangeRateException(e.getMessage());
 		}
-
 	}
 }

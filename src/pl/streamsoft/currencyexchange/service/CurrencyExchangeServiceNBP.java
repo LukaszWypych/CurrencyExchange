@@ -3,7 +3,6 @@ package pl.streamsoft.currencyexchange.service;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.http.HttpEntity;
@@ -25,7 +24,6 @@ import pl.streamsoft.currencyexchange.exception.ParsingExchangeRateException;
 public class CurrencyExchangeServiceNBP extends CurrencyExchangeService {
 
 	private static final String RATE_URL = "http://api.nbp.pl/api/exchangerates/rates/A/";
-	private static final String DATE_URL = "http://api.nbp.pl/api/exchangerates/tables/A/";
 	private final CloseableHttpClient httpClient = HttpClients.createDefault();
 	private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -36,24 +34,8 @@ public class CurrencyExchangeServiceNBP extends CurrencyExchangeService {
 		return getExchangeRateFromEntity(response.getEntity());
 	}
 
-	private Date getLastDateWithRate(Date date) throws IOException {
-		Calendar c = Calendar.getInstance();
-		c.setTime(date);
-		while (true) {
-			HttpGet request = new HttpGet(DATE_URL + simpleDateFormat.format(c.getTime()));
-			request.addHeader("Accept", "application/json");
-			CloseableHttpResponse response = httpClient.execute(request);
-			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-				return c.getTime();
-			}
-			response.close();
-			c.add(Calendar.DATE, -1);
-		}
-	}
-
 	private CloseableHttpResponse getResponseFromNBP(String currencyCode, Date date) {
 		try {
-			date = getLastDateWithRate(date);
 			HttpGet request = new HttpGet(RATE_URL + currencyCode + "/" + simpleDateFormat.format(date));
 			request.addHeader("Accept", "application/json");
 			CloseableHttpResponse response = httpClient.execute(request);
@@ -61,7 +43,6 @@ public class CurrencyExchangeServiceNBP extends CurrencyExchangeService {
 		} catch (IOException e) {
 			throw new UncheckedIOException("Executing http request failed", e);
 		}
-
 	}
 
 	private void handleResponseCode(int responseCode) {
@@ -85,6 +66,5 @@ public class CurrencyExchangeServiceNBP extends CurrencyExchangeService {
 		} catch (IOException e) {
 			throw new ParsingExchangeRateException(e.getMessage());
 		}
-
 	}
 }

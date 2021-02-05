@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import pl.streamsoft.currencyexchange.BusinessDayUtils;
 import pl.streamsoft.currencyexchange.ExchangeRate;
 import pl.streamsoft.currencyexchange.ExchangedCurrency;
 
@@ -12,6 +13,7 @@ public abstract class CurrencyExchangeService {
 
 	public ExchangedCurrency exchangeCurrencyToPLN(String currencyCode, Date date, BigDecimal value) {
 		handleInputArguments(currencyCode, date, value);
+		date = BusinessDayUtils.getLastWorkingDay(date);
 		ExchangeRate rate = getExchangeRate(currencyCode, date);
 		BigDecimal exchangedValue = value.multiply(rate.getValue()).setScale(2, RoundingMode.HALF_UP);
 		ExchangedCurrency exchangedCurrency = new ExchangedCurrency(exchangedValue, rate.getDate());
