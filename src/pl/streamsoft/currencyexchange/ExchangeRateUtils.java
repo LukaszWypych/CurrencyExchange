@@ -7,6 +7,7 @@ import java.util.Date;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
 
 import pl.streamsoft.currencyexchange.exception.ParsingExchangeRateException;
 
@@ -23,5 +24,9 @@ public final class ExchangeRateUtils {
 		} catch (ParseException | JSONException e) {
 			throw new ParsingExchangeRateException(e.getMessage());
 		}
+	}
+	
+	public static ExchangeRate getExchangeRateFromXml(Document doc) {
+		return new ExchangeRate(null, null, null);
 	}
 }

@@ -37,8 +37,7 @@ public final class BusinessDayUtils {
 			Calendar calInstance = Calendar.getInstance();
 			calInstance.setTime(date);
 			int weekDay = calInstance.get(Calendar.DAY_OF_WEEK);
-			while (weekDay == Calendar.SATURDAY || weekDay == Calendar.SUNDAY || holidays
-					.contains((calInstance.get(Calendar.MONTH) + 1) + "," + calInstance.get(Calendar.DATE))) {
+			while (isWeekend(weekDay) || isHoliday(calInstance)) {
 				calInstance.add(Calendar.DATE, -1);
 				weekDay = calInstance.get(Calendar.DAY_OF_WEEK);
 			}
@@ -49,4 +48,11 @@ public final class BusinessDayUtils {
 		return previousWorkingDate;
 	}
 
+	private static boolean isWeekend(int weekDay) {
+		return weekDay == Calendar.SATURDAY || weekDay == Calendar.SUNDAY;
+	}
+
+	private static boolean isHoliday(Calendar calendar) {
+		return holidays.contains((calendar.get(Calendar.MONTH) + 1) + "," + calendar.get(Calendar.DATE));
+	}
 }

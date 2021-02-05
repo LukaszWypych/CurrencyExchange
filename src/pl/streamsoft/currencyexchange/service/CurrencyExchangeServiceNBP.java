@@ -3,27 +3,26 @@ package pl.streamsoft.currencyexchange.service;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
 
 import pl.streamsoft.currencyexchange.ExchangeRate;
-import pl.streamsoft.currencyexchange.ExchangeRateUtils;
 import pl.streamsoft.currencyexchange.exception.CurrencyNotFoundException;
 import pl.streamsoft.currencyexchange.exception.ExchangeCurrencyHttpException;
 import pl.streamsoft.currencyexchange.exception.GettingExchangeRateTimeoutException;
 import pl.streamsoft.currencyexchange.exception.ParsingExchangeRateException;
 
-public class CurrencyExchangeServiceNBP extends CurrencyExchangeService {
+public abstract class CurrencyExchangeServiceNBP extends CurrencyExchangeService {
 
 	private static final String RATE_URL = "http://api.nbp.pl/api/exchangerates/rates/A/";
+	private static final String DATE_URL = "http://api.nbp.pl/api/exchangerates/tables/A/";
 	private final CloseableHttpClient httpClient = HttpClients.createDefault();
 	private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -31,7 +30,11 @@ public class CurrencyExchangeServiceNBP extends CurrencyExchangeService {
 	protected ExchangeRate getExchangeRate(String currencyCode, Date date) {
 		CloseableHttpResponse response = getResponseFromNBP(currencyCode, date);
 		handleResponseCode(response.getStatusLine().getStatusCode());
-		return getExchangeRateFromEntity(response.getEntity());
+		try {
+			return getExchangeRateFromBody(EntityUtils.toString(response.getEntity()));
+		} catch (IOException e) {
+			throw new ParsingExchangeRateException(e.getMessage());
+		}
 	}
 
 	private CloseableHttpResponse getResponseFromNBP(String currencyCode, Date date) {
@@ -41,7 +44,7 @@ public class CurrencyExchangeServiceNBP extends CurrencyExchangeService {
 			CloseableHttpResponse response = httpClient.execute(request);
 			return response;
 		} catch (IOException e) {
-			throw new UncheckedIOException("Executing http request failed", e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
@@ -58,13 +61,39 @@ public class CurrencyExchangeServiceNBP extends CurrencyExchangeService {
 		}
 	}
 
-	private ExchangeRate getExchangeRateFromEntity(HttpEntity entity) {
+	@Override
+	protected Date getLastDateWithRate(Date date) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
 		try {
-			String body = EntityUtils.toString(entity);
-			JSONObject bodyJson = new JSONObject(body);
-			return ExchangeRateUtils.getExchangeRateFromJson(bodyJson);
+			while (true) {
+				HttpGet request = new HttpGet(DATE_URL + simpleDateFormat.format(c.getTime()));
+				request.addHeader("Accept", "application/json");
+				CloseableHttpResponse response = httpClient.execute(request);
+				int status = response.getStatusLine().getStatusCode();
+				response.close();
+				if (isDateResponseValid(status)) {
+					return c.getTime();
+				}
+				c.add(Calendar.DATE, -1);
+			}
 		} catch (IOException e) {
-			throw new ParsingExchangeRateException(e.getMessage());
+			throw new UncheckedIOException(e);
 		}
 	}
+
+	private boolean isDateResponseValid(int responseCode) {
+		switch (responseCode) {
+		case HttpStatus.SC_OK:
+			return true;
+		case HttpStatus.SC_NOT_FOUND:
+			return false;
+		case HttpStatus.SC_REQUEST_TIMEOUT:
+			throw new GettingExchangeRateTimeoutException("Couldn't get a response from NBP server");
+		default:
+			throw new ExchangeCurrencyHttpException("Problem occurred during getting response from the server");
+		}
+	}
+
+	abstract protected ExchangeRate getExchangeRateFromBody(String body);
 }
