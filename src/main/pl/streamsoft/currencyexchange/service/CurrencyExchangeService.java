@@ -1,7 +1,9 @@
 package pl.streamsoft.currencyexchange.service;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Pattern;
 
@@ -32,7 +34,18 @@ public abstract class CurrencyExchangeService {
 		}
 	}
 
-	abstract protected Date getLastDateWithRate(Date date);
+	private Date getLastDateWithRate(Date date) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+		while (true) {
+			if (isDateValid(c.getTime())) {
+				return c.getTime();
+			}
+			c.add(Calendar.DATE, -1);
+		}
+	}
+
+	abstract protected boolean isDateValid(Date date);
 
 	abstract protected ExchangeRate getExchangeRate(String currencyCode, Date date);
 }

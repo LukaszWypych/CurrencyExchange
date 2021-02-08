@@ -33,4 +33,9 @@ public class CurrencyExchangeServiceNBPXml extends CurrencyExchangeServiceNBP {
 		}
 		return null;
 	}
+	
+	@Override
+	protected String getFormat() {
+		return "xml";
+	}
 }

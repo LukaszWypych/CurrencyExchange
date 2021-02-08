@@ -1,7 +1,6 @@
 package pl.streamsoft.currencyexchange.service;
 
 import java.io.File;
-import java.util.Calendar;
 import java.util.Date;
 
 import pl.streamsoft.currencyexchange.ExchangeRate;
@@ -17,7 +16,7 @@ public abstract class CurrencyExchangeServiceFile extends CurrencyExchangeServic
 
 	private File getFile(Date date) {
 
-		File file = new File(date.toString() + "." + getExtension());
+		File file = new File(date.toString() + "." + getFormat());
 		if (!file.exists()) {
 			throw new CurrencyNotFoundException("Currency file not found");
 		}
@@ -25,19 +24,12 @@ public abstract class CurrencyExchangeServiceFile extends CurrencyExchangeServic
 	}
 
 	@Override
-	protected Date getLastDateWithRate(Date date) {
-		Calendar c = Calendar.getInstance();
-		c.setTime(date);
-		while (true) {
-			File file = new File(date.toString() + "." + getExtension());
-			if (file.exists()) {
-				return date;
-			}
-			c.add(Calendar.DATE, -1);
-		}
+	protected boolean isDateValid(Date date) {
+		File file = new File(date.toString() + "." + getFormat());
+		return file.exists();
 	}
 
 	abstract protected ExchangeRate getExchangeRateFromFile(File file);
 
-	abstract protected String getExtension();
+	abstract protected String getFormat();
 }

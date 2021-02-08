@@ -40,9 +40,23 @@ public abstract class CurrencyExchangeServiceNBP extends CurrencyExchangeService
 	private CloseableHttpResponse getResponseFromNBP(String currencyCode, Date date) {
 		try {
 			HttpGet request = new HttpGet(RATE_URL + currencyCode + "/" + simpleDateFormat.format(date));
-			request.addHeader("Accept", "application/json");
+			request.addHeader("Accept", "application/" + getFormat());
 			CloseableHttpResponse response = httpClient.execute(request);
 			return response;
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+	}
+
+	@Override
+	protected boolean isDateValid(Date date) {
+		try {
+			HttpGet request = new HttpGet(DATE_URL + simpleDateFormat.format(date));
+			request.addHeader("Accept", "application/" + getFormat());
+			CloseableHttpResponse response = httpClient.execute(request);
+			int status = response.getStatusLine().getStatusCode();
+			response.close();
+			return isDateResponseValid(status);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
@@ -54,31 +68,8 @@ public abstract class CurrencyExchangeServiceNBP extends CurrencyExchangeService
 			break;
 		case HttpStatus.SC_NOT_FOUND:
 			throw new CurrencyNotFoundException("Currency not found");
-		case HttpStatus.SC_REQUEST_TIMEOUT:
-			throw new GettingExchangeRateTimeoutException("Couldn't get a response from NBP server");
 		default:
-			throw new ExchangeCurrencyHttpException("Problem occurred during getting response from the server");
-		}
-	}
-
-	@Override
-	protected Date getLastDateWithRate(Date date) {
-		Calendar c = Calendar.getInstance();
-		c.setTime(date);
-		try {
-			while (true) {
-				HttpGet request = new HttpGet(DATE_URL + simpleDateFormat.format(c.getTime()));
-				request.addHeader("Accept", "application/json");
-				CloseableHttpResponse response = httpClient.execute(request);
-				int status = response.getStatusLine().getStatusCode();
-				response.close();
-				if (isDateResponseValid(status)) {
-					return c.getTime();
-				}
-				c.add(Calendar.DATE, -1);
-			}
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
+			handleErrorResponse(responseCode);
 		}
 	}
 
@@ -88,6 +79,14 @@ public abstract class CurrencyExchangeServiceNBP extends CurrencyExchangeService
 			return true;
 		case HttpStatus.SC_NOT_FOUND:
 			return false;
+		default:
+			handleErrorResponse(responseCode);
+			return false;
+		}
+	}
+
+	private void handleErrorResponse(int reponseCode) {
+		switch (reponseCode) {
 		case HttpStatus.SC_REQUEST_TIMEOUT:
 			throw new GettingExchangeRateTimeoutException("Couldn't get a response from NBP server");
 		default:
@@ -96,4 +95,6 @@ public abstract class CurrencyExchangeServiceNBP extends CurrencyExchangeService
 	}
 
 	abstract protected ExchangeRate getExchangeRateFromBody(String body);
+
+	abstract protected String getFormat();
 }

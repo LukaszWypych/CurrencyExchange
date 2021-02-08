@@ -12,4 +12,9 @@ public class CurrencyExchangeServiceNBPJson extends CurrencyExchangeServiceNBP {
 		JSONObject bodyJson = new JSONObject(body);
 		return ExchangeRateUtils.getExchangeRateFromJson(bodyJson);
 	}
+
+	@Override
+	protected String getFormat() {
+		return "json";
+	}
 }

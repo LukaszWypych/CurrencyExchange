@@ -14,7 +14,7 @@ public class SaleDocumentService {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date date;
 		try {
-			date = simpleDateFormat.parse("2021-1-31");
+			date = simpleDateFormat.parse("2021-2-8");
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);

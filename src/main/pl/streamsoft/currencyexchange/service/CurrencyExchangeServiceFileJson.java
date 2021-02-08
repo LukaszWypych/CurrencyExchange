@@ -32,7 +32,7 @@ public class CurrencyExchangeServiceFileJson extends CurrencyExchangeServiceFile
 		}
 	}
 
-	protected String getExtension() {
+	protected String getFormat() {
 		return "json";
 	}
 }
