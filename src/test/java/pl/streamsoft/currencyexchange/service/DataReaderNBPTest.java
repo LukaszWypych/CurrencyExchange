@@ -1,4 +1,4 @@
-package pl.streamsoft.currencyexchange.newservice;
+package pl.streamsoft.currencyexchange.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,6 +24,8 @@ import org.mockito.internal.util.reflection.Whitebox;
 import pl.streamsoft.currencyexchange.exception.CurrencyNotFoundException;
 import pl.streamsoft.currencyexchange.exception.ExchangeCurrencyHttpException;
 import pl.streamsoft.currencyexchange.exception.GettingExchangeRateTimeoutException;
+import pl.streamsoft.currencyexchange.service.DataReader;
+import pl.streamsoft.currencyexchange.service.DataReaderNBP;
 
 public class DataReaderNBPTest {
 

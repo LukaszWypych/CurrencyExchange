@@ -1,4 +1,4 @@
-package pl.streamsoft.currencyexchange.newservice;
+package pl.streamsoft.currencyexchange.service;
 
 import java.util.Date;
 

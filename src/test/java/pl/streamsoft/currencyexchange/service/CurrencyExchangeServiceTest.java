@@ -12,37 +12,60 @@ import java.util.Date;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import pl.streamsoft.currencyexchange.ExchangeRate;
 import pl.streamsoft.currencyexchange.ExchangedCurrency;
+import pl.streamsoft.currencyexchange.service.Converter;
+import pl.streamsoft.currencyexchange.service.CurrencyExchangeService;
+import pl.streamsoft.currencyexchange.service.DataReader;
 
 public class CurrencyExchangeServiceTest {
 
 	private CurrencyExchangeService currencyExchangeService;
 
+	private DataReader dataReader;
+
+	private Converter converter;
+
 	private String currencyCode;
 
 	private Date date;
+
+	private Date newDate;
 
 	private BigDecimal value;
 
 	@BeforeEach
 	void setup() {
-		currencyExchangeService = mock(CurrencyExchangeService.class, Mockito.CALLS_REAL_METHODS);
+		dataReader = mock(DataReader.class);
+		converter = mock(Converter.class);
+		currencyExchangeService = new CurrencyExchangeService(dataReader, converter);
 		currencyCode = "usd";
 		date = new Date();
+		newDate = new Date();
 		value = new BigDecimal("100");
 	}
 
 	@Test
 	void shouldExchangeCurrencyOnGivenDay() {
 		// given
-		when(currencyExchangeService.isDateValid(date)).thenReturn(true);
-		ExchangeRate exchangeRate = new ExchangeRate(currencyCode, new BigDecimal("2"), date);
-		when(currencyExchangeService.getExchangeRate(currencyCode, date)).thenReturn(exchangeRate);
+		when(dataReader.isDateValid(any(Date.class))).thenReturn(true);
+		Answer<String> dateAnswer = new Answer<String>() {
+			public String answer(InvocationOnMock invocation) throws Throwable {
+				newDate = invocation.getArgumentAt(1, Date.class);
+				return "body";
+			}
+		};
+		when(dataReader.getExchangeRateBody(any(String.class), any(Date.class))).then(dateAnswer);
+		Answer<ExchangeRate> rateAnswer = new Answer<ExchangeRate>() {
+			public ExchangeRate answer(InvocationOnMock invocation) throws Throwable {
+				ExchangeRate exchangeRate = new ExchangeRate(currencyCode, new BigDecimal("2"), newDate);
+				return exchangeRate;
+			}
+		};
+		when(converter.getExchangeRateFromBody(any(String.class))).then(rateAnswer);
 
 		// when
 		ExchangedCurrency result = currencyExchangeService.exchangeCurrencyToPLN(currencyCode, date, value);
@@ -55,15 +78,21 @@ public class CurrencyExchangeServiceTest {
 	@Test
 	void shouldExchangeCurrencyOnPreviousDay() {
 		// given
-		when(currencyExchangeService.isDateValid(any(Date.class))).thenReturn(false).thenReturn(true);
-		Answer<ExchangeRate> answer = new Answer<ExchangeRate>() {
+		when(dataReader.isDateValid(any(Date.class))).thenReturn(false).thenReturn(true);
+		Answer<String> dateAnswer = new Answer<String>() {
+			public String answer(InvocationOnMock invocation) throws Throwable {
+				newDate = invocation.getArgumentAt(1, Date.class);
+				return "body";
+			}
+		};
+		when(dataReader.getExchangeRateBody(any(String.class), any(Date.class))).then(dateAnswer);
+		Answer<ExchangeRate> rateAnswer = new Answer<ExchangeRate>() {
 			public ExchangeRate answer(InvocationOnMock invocation) throws Throwable {
-				Date newDate = invocation.getArgumentAt(1, Date.class);
 				ExchangeRate exchangeRate = new ExchangeRate(currencyCode, new BigDecimal("2"), newDate);
 				return exchangeRate;
 			}
 		};
-		when(currencyExchangeService.getExchangeRate(any(String.class), any(Date.class))).then(answer);
+		when(converter.getExchangeRateFromBody(any(String.class))).then(rateAnswer);
 
 		// when
 		ExchangedCurrency result = currencyExchangeService.exchangeCurrencyToPLN(currencyCode, date, value);

@@ -1,4 +1,4 @@
-package pl.streamsoft.currencyexchange.newservice;
+package pl.streamsoft.currencyexchange.service;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

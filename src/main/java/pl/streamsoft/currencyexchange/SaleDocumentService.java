@@ -5,12 +5,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import pl.streamsoft.currencyexchange.newservice.Converter;
-import pl.streamsoft.currencyexchange.newservice.ConverterJson;
-import pl.streamsoft.currencyexchange.newservice.DataReader;
-import pl.streamsoft.currencyexchange.newservice.DataReaderNBP;
-import pl.streamsoft.currencyexchange.newservice.CurrencyExchangeService;
-import pl.streamsoft.currencyexchange.service.CurrencyExchangeServiceNBPJson;
+import pl.streamsoft.currencyexchange.service.Converter;
+import pl.streamsoft.currencyexchange.service.ConverterJson;
+import pl.streamsoft.currencyexchange.service.CurrencyExchangeService;
+import pl.streamsoft.currencyexchange.service.DataReader;
+import pl.streamsoft.currencyexchange.service.DataReaderNBP;
 
 public class SaleDocumentService {
 
@@ -26,7 +25,6 @@ public class SaleDocumentService {
 		DataReader dataReader = new DataReaderNBP("json");
 		Converter converter = new ConverterJson();
 		CurrencyExchangeService currencyExchangeService = new CurrencyExchangeService(dataReader, converter);
-//		CurrencyExchangeService currencyExchangeService = new CurrencyExchangeServiceNBPJson();
 		ExchangedCurrency exchangedCurrency = currencyExchangeService.exchangeCurrencyToPLN("usd", date,
 				new BigDecimal("100"));
 		System.out.println("Currency exchanged with the rate on the date "

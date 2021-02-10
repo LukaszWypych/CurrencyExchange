@@ -9,12 +9,22 @@ import java.util.regex.Pattern;
 import pl.streamsoft.currencyexchange.ExchangeRate;
 import pl.streamsoft.currencyexchange.ExchangedCurrency;
 
-public abstract class CurrencyExchangeService {
+public class CurrencyExchangeService {
+
+	private DataReader dataReader;
+
+	private Converter converter;
+
+	public CurrencyExchangeService(DataReader dataReader, Converter converter) {
+		this.dataReader = dataReader;
+		this.converter = converter;
+	}
 
 	public ExchangedCurrency exchangeCurrencyToPLN(String currencyCode, Date date, BigDecimal value) {
 		handleInputArguments(currencyCode, date, value);
 		date = getLastDateWithRate(date);
-		ExchangeRate rate = getExchangeRate(currencyCode, date);
+		String body = dataReader.getExchangeRateBody(currencyCode, date);
+		ExchangeRate rate = converter.getExchangeRateFromBody(body);
 		BigDecimal exchangedValue = value.multiply(rate.getValue()).setScale(2, RoundingMode.HALF_UP);
 		ExchangedCurrency exchangedCurrency = new ExchangedCurrency(exchangedValue, rate.getDate());
 		return exchangedCurrency;
@@ -37,14 +47,10 @@ public abstract class CurrencyExchangeService {
 		Calendar c = Calendar.getInstance();
 		c.setTime(date);
 		while (true) {
-			if (isDateValid(c.getTime())) {
+			if (dataReader.isDateValid(c.getTime())) {
 				return c.getTime();
 			}
 			c.add(Calendar.DATE, -1);
 		}
 	}
-
-	abstract protected boolean isDateValid(Date date);
-
-	abstract protected ExchangeRate getExchangeRate(String currencyCode, Date date);
 }
