@@ -3,7 +3,6 @@ package pl.streamsoft.currencyexchange.service;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.http.HttpStatus;

@@ -6,6 +6,7 @@ import java.util.Set;
 public class Car implements Observable {
 
 	private Set<Observator> observators;
+	
 	private String state;
 
 	public Car() {
