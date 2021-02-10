@@ -43,7 +43,7 @@ public abstract class CurrencyExchangeServiceNBP extends CurrencyExchangeService
 			CloseableHttpResponse response = httpClient.execute(request);
 			return response;
 		} catch (IOException e) {
-			throw new UncheckedIOException(e);
+			throw new ExchangeCurrencyHttpException("Problem occurred during getting response from the server");
 		}
 	}
 
@@ -57,7 +57,7 @@ public abstract class CurrencyExchangeServiceNBP extends CurrencyExchangeService
 			response.close();
 			return isDateResponseValid(status);
 		} catch (IOException e) {
-			throw new UncheckedIOException(e);
+			throw new ExchangeCurrencyHttpException("Problem occurred during getting response from the server");
 		}
 	}
 
@@ -87,7 +87,7 @@ public abstract class CurrencyExchangeServiceNBP extends CurrencyExchangeService
 	private void handleErrorResponse(int reponseCode) {
 		switch (reponseCode) {
 		case HttpStatus.SC_REQUEST_TIMEOUT:
-			throw new GettingExchangeRateTimeoutException("Couldn't get a response from NBP server");
+			throw new GettingExchangeRateTimeoutException("Request timeout - Couldn't get a response from NBP server");
 		default:
 			throw new ExchangeCurrencyHttpException("Problem occurred during getting response from the server");
 		}
