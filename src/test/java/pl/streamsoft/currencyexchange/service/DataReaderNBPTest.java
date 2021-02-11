@@ -24,8 +24,8 @@ import org.mockito.internal.util.reflection.Whitebox;
 import pl.streamsoft.currencyexchange.exception.CurrencyNotFoundException;
 import pl.streamsoft.currencyexchange.exception.ExchangeCurrencyHttpException;
 import pl.streamsoft.currencyexchange.exception.GettingExchangeRateTimeoutException;
-import pl.streamsoft.currencyexchange.service.DataReader;
-import pl.streamsoft.currencyexchange.service.DataReaderNBP;
+import pl.streamsoft.currencyexchange.service.datareader.DataReader;
+import pl.streamsoft.currencyexchange.service.datareader.DataReaderNBP;
 
 public class DataReaderNBPTest {
 
@@ -61,7 +61,7 @@ public class DataReaderNBPTest {
 	}
 
 	@Test
-	void shouldReturnExchangeRate() throws ParseException, IOException {
+	void shouldReturnExchangeRate() throws IOException {
 		// given
 		when(statusLine.getStatusCode()).thenReturn(200);
 		when(response.getEntity()).thenReturn(httpEntity);

@@ -1,4 +1,4 @@
-package pl.streamsoft.currencyexchange.service;
+package pl.streamsoft.currencyexchange.service.converter;
 
 import java.math.BigDecimal;
 import java.text.ParseException;

@@ -1,4 +1,4 @@
-package pl.streamsoft.currencyexchange.service;
+package pl.streamsoft.currencyexchange.service.datareader;
 
 import java.io.File;
 import java.io.IOException;

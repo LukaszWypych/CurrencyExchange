@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 
 import pl.streamsoft.currencyexchange.ExchangeRate;
 import pl.streamsoft.currencyexchange.ExchangedCurrency;
+import pl.streamsoft.currencyexchange.service.converter.Converter;
+import pl.streamsoft.currencyexchange.service.datareader.DataReader;
 
 public class CurrencyExchangeService {
 

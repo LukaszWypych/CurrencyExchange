@@ -5,11 +5,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import pl.streamsoft.currencyexchange.service.Converter;
-import pl.streamsoft.currencyexchange.service.ConverterJson;
 import pl.streamsoft.currencyexchange.service.CurrencyExchangeService;
-import pl.streamsoft.currencyexchange.service.DataReader;
-import pl.streamsoft.currencyexchange.service.DataReaderNBP;
+import pl.streamsoft.currencyexchange.service.converter.Converter;
+import pl.streamsoft.currencyexchange.service.converter.ConverterJson;
+import pl.streamsoft.currencyexchange.service.datareader.DataReader;
+import pl.streamsoft.currencyexchange.service.datareader.DataReaderNBP;
 
 public class SaleDocumentService {
 
