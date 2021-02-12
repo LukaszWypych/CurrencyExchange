@@ -10,23 +10,32 @@ import pl.streamsoft.currencyexchange.ExchangeRate;
 import pl.streamsoft.currencyexchange.ExchangedCurrency;
 import pl.streamsoft.currencyexchange.service.converter.Converter;
 import pl.streamsoft.currencyexchange.service.datareader.DataReader;
+import pl.streamsoft.currencyexchange.service.repository.Repository;
+import pl.streamsoft.currencyexchange.service.repository.RepositoryHibernate;
 
 public class CurrencyExchangeService {
+
+	private  Repository repository;
 
 	private DataReader dataReader;
 
 	private Converter converter;
 
-	public CurrencyExchangeService(DataReader dataReader, Converter converter) {
+	public CurrencyExchangeService(DataReader dataReader, Converter converter, Repository repository) {
 		this.dataReader = dataReader;
 		this.converter = converter;
+		this.repository = repository;
 	}
-
+	
 	public ExchangedCurrency exchangeCurrencyToPLN(String currencyCode, Date date, BigDecimal value) {
 		handleInputArguments(currencyCode, date, value);
-		date = getLastDateWithRate(date);
-		String body = dataReader.getExchangeRateBody(currencyCode, date);
-		ExchangeRate rate = converter.getExchangeRateFromBody(body);
+		ExchangeRate rate = repository.getExchangeRate(currencyCode, date);
+		if (rate == null) {
+			date = getLastDateWithRate(date);
+			String body = dataReader.getExchangeRateBody(currencyCode, date);
+			rate = converter.getExchangeRateFromBody(body);
+			repository.addExchangeRate(rate);
+		}
 		BigDecimal exchangedValue = value.multiply(rate.getValue()).setScale(2, RoundingMode.HALF_UP);
 		ExchangedCurrency exchangedCurrency = new ExchangedCurrency(exchangedValue, rate.getDate());
 		return exchangedCurrency;

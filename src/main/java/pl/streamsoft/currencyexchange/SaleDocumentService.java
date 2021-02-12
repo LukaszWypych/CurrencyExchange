@@ -10,10 +10,12 @@ import pl.streamsoft.currencyexchange.service.converter.Converter;
 import pl.streamsoft.currencyexchange.service.converter.ConverterJson;
 import pl.streamsoft.currencyexchange.service.datareader.DataReader;
 import pl.streamsoft.currencyexchange.service.datareader.DataReaderNBP;
+import pl.streamsoft.currencyexchange.service.repository.Repository;
+import pl.streamsoft.currencyexchange.service.repository.RepositoryHibernate;
 
 public class SaleDocumentService {
 
-	private static void insert()  {
+	private static void insert() {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date date;
 		try {
@@ -24,14 +26,16 @@ public class SaleDocumentService {
 		}
 		DataReader dataReader = new DataReaderNBP("json");
 		Converter converter = new ConverterJson();
-		CurrencyExchangeService currencyExchangeService = new CurrencyExchangeService(dataReader, converter);
+		Repository repository = new RepositoryHibernate();
+		CurrencyExchangeService currencyExchangeService = new CurrencyExchangeService(dataReader, converter,
+				repository);
 		ExchangedCurrency exchangedCurrency = currencyExchangeService.exchangeCurrencyToPLN("usd", date,
 				new BigDecimal("100"));
 		System.out.println("Currency exchanged with the rate on the date "
 				+ simpleDateFormat.format(exchangedCurrency.getDate()) + " is " + exchangedCurrency.getValue());
 	}
 
-	public static void main(String[] args)  {
+	public static void main(String[] args) {
 		insert();
 	}
 }

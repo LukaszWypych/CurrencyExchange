@@ -3,6 +3,7 @@ package pl.streamsoft.currencyexchange;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,26 +15,36 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "exchange_rates")
 public class ExchangeRate {
-	
+
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id
+	@Id
 	private Long id;
-	
+
 	private String code;
-	
-	private BigDecimal value;
-	
+
+	@Column(name = "rate", precision = 19, scale = 4)
+	private BigDecimal rate;
+
 	@Temporal(TemporalType.DATE)
 	private Date date;
-	
+
+	private String country;
+
 	public ExchangeRate() {
-		
+
 	}
-	
-	public ExchangeRate(String code, BigDecimal value, Date date) {
-		this.code=code;
-		this.value=value;
-		this.date=date;
+
+	public ExchangeRate(String code, BigDecimal rate, Date date) {
+		this.code = code;
+		this.rate = rate;
+		this.date = date;
+	}
+
+	public ExchangeRate(String code, BigDecimal rate, Date date, String country) {
+		this.code = code;
+		this.rate = rate;
+		this.date = date;
+		this.country = country;
 	}
 
 	public String getCode() {
@@ -41,7 +52,7 @@ public class ExchangeRate {
 	}
 
 	public BigDecimal getValue() {
-		return value;
+		return rate;
 	}
 
 	public Date getDate() {
@@ -61,10 +72,18 @@ public class ExchangeRate {
 	}
 
 	public void setValue(BigDecimal value) {
-		this.value = value;
+		this.rate = value;
 	}
 
 	public void setDate(Date date) {
 		this.date = date;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
 	}
 }
