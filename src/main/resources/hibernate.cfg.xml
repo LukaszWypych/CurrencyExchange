@@ -14,10 +14,11 @@
 
 		<property name="hibernate.connection.password">postgres</property>
 
-		<property name="hibernate.hbm2ddl.auto">none</property>
+		<property name="hibernate.hbm2ddl.auto">update</property>
 
 		
 		<!-- Annotated entity classes -->
-		<mapping class="pl.streamsoft.currencyexchange.ExchangeRate" />
+		<mapping class="pl.streamsoft.currencyexchange.ExchangeRateEntity" />
+		<mapping class="pl.streamsoft.currencyexchange.CountryEntity" />
 	</session-factory>
 </hibernate-configuration>

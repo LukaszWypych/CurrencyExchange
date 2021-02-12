@@ -1,8 +1,8 @@
 package pl.streamsoft.currencyexchange.service.converter;
 
-import pl.streamsoft.currencyexchange.ExchangeRate;
+import pl.streamsoft.currencyexchange.entity.ExchangeRateEntity;
 
 public interface Converter {
 
-	public ExchangeRate getExchangeRateFromBody(String body);
+	public ExchangeRateEntity getExchangeRateFromBody(String body);
 }

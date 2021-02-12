@@ -1,20 +1,22 @@
-package pl.streamsoft.currencyexchange;
+package pl.streamsoft.currencyexchange.entity;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "exchange_rates")
-public class ExchangeRate {
+public class ExchangeRateEntity {
 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
@@ -28,23 +30,21 @@ public class ExchangeRate {
 	@Temporal(TemporalType.DATE)
 	private Date date;
 
-	private String country;
+	@ManyToMany
+	private Set<CountryEntity> countries;
 
-	public ExchangeRate() {
+	public ExchangeRateEntity() {
 
 	}
 
-	public ExchangeRate(String code, BigDecimal rate, Date date) {
+	public ExchangeRateEntity(String code, BigDecimal rate, Date date) {
 		this.code = code;
 		this.rate = rate;
 		this.date = date;
 	}
 
-	public ExchangeRate(String code, BigDecimal rate, Date date, String country) {
-		this.code = code;
-		this.rate = rate;
-		this.date = date;
-		this.country = country;
+	public Long getId() {
+		return id;
 	}
 
 	public String getCode() {
@@ -59,8 +59,8 @@ public class ExchangeRate {
 		return date;
 	}
 
-	public Long getId() {
-		return id;
+	public Set<CountryEntity> getCountry() {
+		return countries;
 	}
 
 	public void setId(Long id) {
@@ -79,11 +79,7 @@ public class ExchangeRate {
 		this.date = date;
 	}
 
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String country) {
-		this.country = country;
+	public void setCountry(Set<CountryEntity> countries) {
+		this.countries = countries;
 	}
 }

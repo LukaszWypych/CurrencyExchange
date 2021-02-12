@@ -6,16 +6,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Pattern;
 
-import pl.streamsoft.currencyexchange.ExchangeRate;
 import pl.streamsoft.currencyexchange.ExchangedCurrency;
+import pl.streamsoft.currencyexchange.entity.ExchangeRateEntity;
+import pl.streamsoft.currencyexchange.repository.Repository;
 import pl.streamsoft.currencyexchange.service.converter.Converter;
 import pl.streamsoft.currencyexchange.service.datareader.DataReader;
-import pl.streamsoft.currencyexchange.service.repository.Repository;
-import pl.streamsoft.currencyexchange.service.repository.RepositoryHibernate;
 
 public class CurrencyExchangeService {
 
-	private  Repository repository;
+	private ExchangeRateService exchangeRateService;
 
 	private DataReader dataReader;
 
@@ -24,17 +23,23 @@ public class CurrencyExchangeService {
 	public CurrencyExchangeService(DataReader dataReader, Converter converter, Repository repository) {
 		this.dataReader = dataReader;
 		this.converter = converter;
-		this.repository = repository;
+		this.exchangeRateService = new ExchangeRateService(repository);
 	}
-	
+
 	public ExchangedCurrency exchangeCurrencyToPLN(String currencyCode, Date date, BigDecimal value) {
 		handleInputArguments(currencyCode, date, value);
-		ExchangeRate rate = repository.getExchangeRate(currencyCode, date);
+		ExchangeRateEntity rate = exchangeRateService.getExchangeRateByCode(currencyCode, date);
 		if (rate == null) {
 			date = getLastDateWithRate(date);
 			String body = dataReader.getExchangeRateBody(currencyCode, date);
 			rate = converter.getExchangeRateFromBody(body);
-			repository.addExchangeRate(rate);
+			ExchangeRateEntity dbRate = exchangeRateService.getExchangeRateByCode(currencyCode, date);
+			if (dbRate == null) {
+				exchangeRateService.addExchangeRate(rate);
+			} else {
+				dbRate.setValue(rate.getValue());
+				exchangeRateService.updateExchangeRate(dbRate);
+			}
 		}
 		BigDecimal exchangedValue = value.multiply(rate.getValue()).setScale(2, RoundingMode.HALF_UP);
 		ExchangedCurrency exchangedCurrency = new ExchangedCurrency(exchangedValue, rate.getDate());

@@ -5,13 +5,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import pl.streamsoft.currencyexchange.repository.Repository;
+import pl.streamsoft.currencyexchange.repository.RepositoryHibernate;
 import pl.streamsoft.currencyexchange.service.CurrencyExchangeService;
 import pl.streamsoft.currencyexchange.service.converter.Converter;
 import pl.streamsoft.currencyexchange.service.converter.ConverterJson;
 import pl.streamsoft.currencyexchange.service.datareader.DataReader;
 import pl.streamsoft.currencyexchange.service.datareader.DataReaderNBP;
-import pl.streamsoft.currencyexchange.service.repository.Repository;
-import pl.streamsoft.currencyexchange.service.repository.RepositoryHibernate;
 
 public class SaleDocumentService {
 

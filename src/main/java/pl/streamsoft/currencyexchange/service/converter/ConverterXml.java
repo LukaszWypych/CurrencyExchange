@@ -10,12 +10,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import pl.streamsoft.currencyexchange.ExchangeRate;
+import pl.streamsoft.currencyexchange.entity.ExchangeRateEntity;
 
 public class ConverterXml implements Converter {
 
 	@Override
-	public ExchangeRate getExchangeRateFromBody(String body) {
+	public ExchangeRateEntity getExchangeRateFromBody(String body) {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
 		try {

@@ -3,7 +3,6 @@ package pl.streamsoft.currencyexchange.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -18,11 +17,11 @@ import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import pl.streamsoft.currencyexchange.ExchangeRate;
 import pl.streamsoft.currencyexchange.ExchangedCurrency;
+import pl.streamsoft.currencyexchange.entity.ExchangeRateEntity;
+import pl.streamsoft.currencyexchange.repository.Repository;
 import pl.streamsoft.currencyexchange.service.converter.Converter;
 import pl.streamsoft.currencyexchange.service.datareader.DataReader;
-import pl.streamsoft.currencyexchange.service.repository.Repository;
 
 public class CurrencyExchangeServiceTest {
 
@@ -31,15 +30,17 @@ public class CurrencyExchangeServiceTest {
 	private DataReader dataReader;
 
 	private Converter converter;
-	
-	private  Repository repository;
+
+	private Repository repository;
+
+	private ExchangeRateService exchangeRateService;
 
 	private String currencyCode;
 
 	private Date date;
 
 	private BigDecimal value;
-	
+
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 	@BeforeEach
@@ -47,17 +48,19 @@ public class CurrencyExchangeServiceTest {
 		dataReader = mock(DataReader.class);
 		converter = mock(Converter.class);
 		repository = mock(Repository.class);
+		exchangeRateService = new ExchangeRateService(repository);
 		currencyExchangeService = new CurrencyExchangeService(dataReader, converter, repository);
 		currencyCode = "usd";
 		date = new Date();
 		value = new BigDecimal("100");
+		Whitebox.setInternalState(currencyExchangeService, "exchangeRateService", exchangeRateService);
 	}
-	
+
 	@Test
 	void shouldExchangeCurrencyOnGivenDayFromDatabase() {
 		// given
-		ExchangeRate exchangeRate = new ExchangeRate(currencyCode, new BigDecimal("2"), date);
-		when(repository.getExchangeRate(currencyCode, date)).thenReturn(exchangeRate);
+		ExchangeRateEntity exchangeRate = new ExchangeRateEntity(currencyCode, new BigDecimal("2"), date);
+		when(exchangeRateService.getExchangeRateByCode(currencyCode, date)).thenReturn(exchangeRate);
 
 		// when
 		ExchangedCurrency result = currencyExchangeService.exchangeCurrencyToPLN(currencyCode, date, value);
@@ -70,8 +73,8 @@ public class CurrencyExchangeServiceTest {
 	@Test
 	void shouldExchangeCurrencyOnGivenDayFromExternalSource() {
 		// given
-		when(repository.getExchangeRate(currencyCode, date)).thenReturn(null);
-		ExchangeRate exchangeRate = new ExchangeRate(currencyCode, new BigDecimal("2"), null);
+		when(exchangeRateService.getExchangeRateByCode(currencyCode, date)).thenReturn(null);
+		ExchangeRateEntity exchangeRate = new ExchangeRateEntity(currencyCode, new BigDecimal("2"), null);
 		when(dataReader.isDateValid(any(Date.class))).thenReturn(true);
 		Answer<String> dateAnswer = new Answer<String>() {
 			public String answer(InvocationOnMock invocation) throws Throwable {
@@ -81,7 +84,6 @@ public class CurrencyExchangeServiceTest {
 		};
 		when(dataReader.getExchangeRateBody(any(String.class), any(Date.class))).then(dateAnswer);
 		when(converter.getExchangeRateFromBody(any(String.class))).thenReturn(exchangeRate);
-		doNothing().when(repository).addExchangeRate(exchangeRate);
 
 		// when
 		ExchangedCurrency result = currencyExchangeService.exchangeCurrencyToPLN(currencyCode, date, value);
@@ -94,8 +96,8 @@ public class CurrencyExchangeServiceTest {
 	@Test
 	void shouldExchangeCurrencyOnPreviousDay() {
 		// given
-		when(repository.getExchangeRate(currencyCode, date)).thenReturn(null);
-		ExchangeRate exchangeRate = new ExchangeRate(currencyCode, new BigDecimal("2"), null);
+		when(exchangeRateService.getExchangeRateByCode(currencyCode, date)).thenReturn(null);
+		ExchangeRateEntity exchangeRate = new ExchangeRateEntity(currencyCode, new BigDecimal("2"), null);
 		when(dataReader.isDateValid(any(Date.class))).thenReturn(false).thenReturn(true);
 		Answer<String> dateAnswer = new Answer<String>() {
 			public String answer(InvocationOnMock invocation) throws Throwable {
@@ -105,7 +107,6 @@ public class CurrencyExchangeServiceTest {
 		};
 		when(dataReader.getExchangeRateBody(any(String.class), any(Date.class))).then(dateAnswer);
 		when(converter.getExchangeRateFromBody(any(String.class))).thenReturn(exchangeRate);
-		doNothing().when(repository).addExchangeRate(exchangeRate);
 
 		// when
 		ExchangedCurrency result = currencyExchangeService.exchangeCurrencyToPLN(currencyCode, date, value);
