@@ -7,7 +7,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -19,7 +18,6 @@ import org.mockito.stubbing.Answer;
 
 import pl.streamsoft.currencyexchange.ExchangedCurrency;
 import pl.streamsoft.currencyexchange.entity.ExchangeRateEntity;
-import pl.streamsoft.currencyexchange.repository.Repository;
 import pl.streamsoft.currencyexchange.service.converter.Converter;
 import pl.streamsoft.currencyexchange.service.datareader.DataReader;
 
@@ -31,8 +29,6 @@ public class CurrencyExchangeServiceTest {
 
 	private Converter converter;
 
-	private Repository repository;
-
 	private ExchangeRateService exchangeRateService;
 
 	private String currencyCode;
@@ -41,15 +37,12 @@ public class CurrencyExchangeServiceTest {
 
 	private BigDecimal value;
 
-	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
 	@BeforeEach
 	void setup() {
 		dataReader = mock(DataReader.class);
 		converter = mock(Converter.class);
-		repository = mock(Repository.class);
-		exchangeRateService = new ExchangeRateService(repository);
-		currencyExchangeService = new CurrencyExchangeService(dataReader, converter, repository);
+		exchangeRateService = mock(ExchangeRateService.class);
+		currencyExchangeService = new CurrencyExchangeService(dataReader, converter, exchangeRateService);
 		currencyCode = "usd";
 		date = new Date();
 		value = new BigDecimal("100");
@@ -59,22 +52,22 @@ public class CurrencyExchangeServiceTest {
 	@Test
 	void shouldExchangeCurrencyOnGivenDayFromDatabase() {
 		// given
-		ExchangeRateEntity exchangeRate = new ExchangeRateEntity(currencyCode, new BigDecimal("2"), date);
+		ExchangeRateEntity exchangeRate = new ExchangeRateEntity(new BigDecimal("2"), date);
 		when(exchangeRateService.getExchangeRateByCode(currencyCode, date)).thenReturn(exchangeRate);
 
 		// when
 		ExchangedCurrency result = currencyExchangeService.exchangeCurrencyToPLN(currencyCode, date, value);
 
 		// then
-		assertThat(result.getValue().doubleValue()).isEqualTo(value.doubleValue() * 2);
-		assertThat(simpleDateFormat.format(result.getDate())).isEqualTo(simpleDateFormat.format(date));
+		assertThat(result.getValue().equals(value.multiply(exchangeRate.getValue())));
+		assertThat(result.getDate()).isEqualTo(date);
 	}
 
 	@Test
 	void shouldExchangeCurrencyOnGivenDayFromExternalSource() {
 		// given
 		when(exchangeRateService.getExchangeRateByCode(currencyCode, date)).thenReturn(null);
-		ExchangeRateEntity exchangeRate = new ExchangeRateEntity(currencyCode, new BigDecimal("2"), null);
+		ExchangeRateEntity exchangeRate = new ExchangeRateEntity(new BigDecimal("2"), null);
 		when(dataReader.isDateValid(any(Date.class))).thenReturn(true);
 		Answer<String> dateAnswer = new Answer<String>() {
 			public String answer(InvocationOnMock invocation) throws Throwable {
@@ -89,15 +82,15 @@ public class CurrencyExchangeServiceTest {
 		ExchangedCurrency result = currencyExchangeService.exchangeCurrencyToPLN(currencyCode, date, value);
 
 		// then
-		assertThat(result.getValue().doubleValue()).isEqualTo(value.doubleValue() * 2);
-		assertThat(simpleDateFormat.format(result.getDate())).isEqualTo(simpleDateFormat.format(date));
+		assertThat(result.getValue().equals(value.multiply(exchangeRate.getValue())));
+		assertThat(result.getDate()).isEqualTo(date);
 	}
 
 	@Test
 	void shouldExchangeCurrencyOnPreviousDay() {
 		// given
 		when(exchangeRateService.getExchangeRateByCode(currencyCode, date)).thenReturn(null);
-		ExchangeRateEntity exchangeRate = new ExchangeRateEntity(currencyCode, new BigDecimal("2"), null);
+		ExchangeRateEntity exchangeRate = new ExchangeRateEntity(new BigDecimal("2"), null);
 		when(dataReader.isDateValid(any(Date.class))).thenReturn(false).thenReturn(true);
 		Answer<String> dateAnswer = new Answer<String>() {
 			public String answer(InvocationOnMock invocation) throws Throwable {
@@ -112,8 +105,8 @@ public class CurrencyExchangeServiceTest {
 		ExchangedCurrency result = currencyExchangeService.exchangeCurrencyToPLN(currencyCode, date, value);
 
 		// then
-		assertThat(result.getValue().doubleValue()).isEqualTo(value.doubleValue() * 2);
-		assertThat(result.getDate().before(date)).isEqualTo(true);
+		assertThat(result.getValue().equals(value.multiply(exchangeRate.getValue())));
+		assertThat(result.getDate()).isBefore(date);
 	}
 
 	@Test

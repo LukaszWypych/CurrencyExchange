@@ -1,46 +1,83 @@
 package pl.streamsoft.currencyexchange.service;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
+import com.neovisionaries.i18n.CountryCode;
+import com.neovisionaries.i18n.CurrencyCode;
+
+import pl.streamsoft.currencyexchange.entity.CountryEntity;
+import pl.streamsoft.currencyexchange.entity.CurrencyEntity;
 import pl.streamsoft.currencyexchange.entity.ExchangeRateEntity;
-import pl.streamsoft.currencyexchange.repository.Repository;
+import pl.streamsoft.currencyexchange.repository.CountryRepository;
+import pl.streamsoft.currencyexchange.repository.CurrencyRepository;
+import pl.streamsoft.currencyexchange.repository.ExchangeRateRepository;
 
 public class ExchangeRateService {
 
-	private Repository repository;
+	private CurrencyRepository currencyRepository;
 
-	public ExchangeRateService(Repository repository) {
-		this.repository = repository;
+	public ExchangeRateService(CurrencyRepository currencyRepository, ExchangeRateRepository exchangeRateRepository,
+			CountryRepository countryRepository) {
+		this.currencyRepository = currencyRepository;
+		this.exchangeRateRepository = exchangeRateRepository;
+		this.countryRepository = countryRepository;
 	}
 
-	public void addExchangeRate(ExchangeRateEntity rate) {
-		prepareExchangeRate(rate);
-		repository.addExchangeRate(rate);
+	private ExchangeRateRepository exchangeRateRepository;
+
+	private CountryRepository countryRepository;
+
+	public void addExchangeRate(ExchangeRateEntity rate, String currencyCode) {
+		if (rate.getCurrency() == null) {
+			addCurrencyToRate(rate, currencyCode.toUpperCase());
+		}
+		exchangeRateRepository.addExchangeRate(rate);
 	}
 
 	public ExchangeRateEntity getExchangeRateByCode(String currencyCode, Date date) {
-		return repository.getExchangeRateByCode(currencyCode.toUpperCase(), date);
-	}
-
-//	public ExchangeRateEntity getExchangeRateByCountry(String country, Date date) {
-//		return repository.getExchangeRateByCode(country.toUpperCase(), date);
-//	}
-
-	public List<ExchangeRateEntity> getAllExchangeRates(Date date) {
-		return repository.getAllExchangeRates(date);
+		return exchangeRateRepository.getExchangeRateByCode(currencyCode.toUpperCase(), date);
 	}
 
 	public void updateExchangeRate(ExchangeRateEntity rate) {
-		prepareExchangeRate(rate);
-		repository.updateExchangeRate(rate);
+		exchangeRateRepository.updateExchangeRate(rate);
 	}
 
-	public void deleteExchangeRate(Long id) {
-		repository.deleteExchangeRate(id);
+	public CurrencyEntity getCurrencyByCode(String currencyCode) {
+		return currencyRepository.getCurrencyByCode(currencyCode.toUpperCase());
 	}
 
-	private void prepareExchangeRate(ExchangeRateEntity exchangeRate) {
-		exchangeRate.setCode(exchangeRate.getCode().toUpperCase());
+	public CountryEntity getCountryByName(String name) {
+		return countryRepository.getCountryByName(name);
+	}
+
+	public void addCountry(CountryEntity countryEntity) {
+		countryRepository.addCountry(countryEntity);
+	}
+
+	public void addCurrency(CurrencyEntity currencyEntity) {
+		currencyRepository.addCurrency(currencyEntity);
+	}
+
+	private void addCurrencyToRate(ExchangeRateEntity rate, String currencyCode) {
+		CurrencyEntity currencyEntity = getCurrencyByCode(currencyCode);
+		if (currencyEntity == null) {
+			CurrencyCode currency = CurrencyCode.getByCode(currencyCode);
+			CountryCode country = currency.getCountryList().get(0);
+			CountryEntity countryEntity = getCountryByName(country.getName());
+			if (countryEntity == null) {
+				countryEntity = new CountryEntity();
+				countryEntity.setName(country.getName());
+				addCountry(countryEntity);
+			}
+			currencyEntity = new CurrencyEntity();
+			currencyEntity.setCode(currencyCode.toUpperCase());
+			currencyEntity.setName(currency.getName());
+			currencyEntity.setCountries(new HashSet<>(Arrays.asList(countryEntity)));
+			addCurrency(currencyEntity);
+		}
+		rate.setCurrency(currencyEntity);
 	}
 }

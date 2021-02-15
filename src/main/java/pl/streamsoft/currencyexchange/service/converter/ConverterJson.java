@@ -22,10 +22,9 @@ public class ConverterJson implements Converter {
 	private ExchangeRateEntity getExchangeRateFromJson(JSONObject json) {
 		try {
 			JSONObject ratesJson = new JSONObject(json.getJSONArray("rates").get(0).toString());
-			String code = json.get("code").toString();
 			BigDecimal rate = new BigDecimal(ratesJson.get("mid").toString());
 			Date date = new SimpleDateFormat("yyyy-MM-dd").parse(ratesJson.get("effectiveDate").toString());
-			ExchangeRateEntity exchangeRate = new ExchangeRateEntity(code, rate, date);
+			ExchangeRateEntity exchangeRate = new ExchangeRateEntity(rate, date);
 			return exchangeRate;
 		} catch (ParseException | JSONException e) {
 			throw new ParsingExchangeRateException(e.getMessage());

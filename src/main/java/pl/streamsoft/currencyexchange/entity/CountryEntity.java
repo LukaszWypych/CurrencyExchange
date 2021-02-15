@@ -20,7 +20,7 @@ public class CountryEntity {
 	private String name;
 
 	@ManyToMany(mappedBy = "countries")
-	private Set<ExchangeRateEntity> exchangeRate;
+	private Set<CurrencyEntity> currencies;
 
 	public Long getId() {
 		return id;
@@ -30,8 +30,8 @@ public class CountryEntity {
 		return name;
 	}
 
-	public Set<ExchangeRateEntity> getExchangeRate() {
-		return exchangeRate;
+	public Set<CurrencyEntity> getExchangeRate() {
+		return currencies;
 	}
 
 	public void setId(Long id) {
@@ -42,8 +42,8 @@ public class CountryEntity {
 		this.name = name;
 	}
 
-	public void setExchangeRate(Set<ExchangeRateEntity> exchangeRate) {
-		this.exchangeRate = exchangeRate;
+	public void setExchangeRate(Set<CurrencyEntity> exchangeRate) {
+		this.currencies = exchangeRate;
 	}
 
 }
