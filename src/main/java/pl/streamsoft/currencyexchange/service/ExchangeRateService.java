@@ -3,7 +3,8 @@ package pl.streamsoft.currencyexchange.service;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
+
+import javax.persistence.NoResultException;
 
 import com.neovisionaries.i18n.CountryCode;
 import com.neovisionaries.i18n.CurrencyCode;
@@ -38,7 +39,11 @@ public class ExchangeRateService {
 	}
 
 	public ExchangeRateEntity getExchangeRateByCode(String currencyCode, Date date) {
-		return exchangeRateRepository.getExchangeRateByCode(currencyCode.toUpperCase(), date);
+		try {
+			return exchangeRateRepository.getExchangeRateByCode(currencyCode.toUpperCase(), date);
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	public void updateExchangeRate(ExchangeRateEntity rate) {
@@ -46,11 +51,19 @@ public class ExchangeRateService {
 	}
 
 	public CurrencyEntity getCurrencyByCode(String currencyCode) {
-		return currencyRepository.getCurrencyByCode(currencyCode.toUpperCase());
+		try {
+			return currencyRepository.getCurrencyByCode(currencyCode.toUpperCase());
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	public CountryEntity getCountryByName(String name) {
-		return countryRepository.getCountryByName(name);
+		try {
+			return countryRepository.getCountryByName(name);
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	public void addCountry(CountryEntity countryEntity) {

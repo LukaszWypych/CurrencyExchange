@@ -64,6 +64,28 @@ public class CurrencyExchangeServiceTest {
 	}
 
 	@Test
+	void shouldExchangeCurrencyOnPreviousDayFromDatabase() {
+		// given
+		ExchangeRateEntity exchangeRate = new ExchangeRateEntity(new BigDecimal("2"), null);
+		when(dataReader.isDateValid(any(Date.class))).thenReturn(false).thenReturn(true);
+		Answer<ExchangeRateEntity> dateAnswer = new Answer<ExchangeRateEntity>() {
+			public ExchangeRateEntity answer(InvocationOnMock invocation) throws Throwable {
+				exchangeRate.setDate(invocation.getArgumentAt(1, Date.class));
+				return exchangeRate;
+			}
+		};
+		when(exchangeRateService.getExchangeRateByCode(any(String.class), any(Date.class))).thenReturn(null)
+				.then(dateAnswer);
+
+		// when
+		ExchangedCurrency result = currencyExchangeService.exchangeCurrencyToPLN(currencyCode, date, value);
+
+		// then
+		assertThat(result.getValue().equals(value.multiply(exchangeRate.getValue())));
+		assertThat(result.getDate()).isBefore(date);
+	}
+
+	@Test
 	void shouldExchangeCurrencyOnGivenDayFromExternalSource() {
 		// given
 		when(exchangeRateService.getExchangeRateByCode(currencyCode, date)).thenReturn(null);
@@ -87,7 +109,7 @@ public class CurrencyExchangeServiceTest {
 	}
 
 	@Test
-	void shouldExchangeCurrencyOnPreviousDay() {
+	void shouldExchangeCurrencyOnPreviousDayFromExterlanSource() {
 		// given
 		when(exchangeRateService.getExchangeRateByCode(currencyCode, date)).thenReturn(null);
 		ExchangeRateEntity exchangeRate = new ExchangeRateEntity(new BigDecimal("2"), null);

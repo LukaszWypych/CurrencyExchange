@@ -4,9 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -18,10 +15,8 @@ import pl.streamsoft.currencyexchange.entity.ExchangeRateEntity;
 
 public class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
 
-	private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("pgsql");
-
 	private EntityManager getEntityManager() {
-		return emf.createEntityManager();
+		return EntityManagerFactoryHelper.getFactory().createEntityManager();
 	}
 
 	@Override
@@ -41,12 +36,8 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
 		Join<ExchangeRateEntity, CurrencyEntity> childJoin = root.join("currency");
 		cq.select(root).where(cb.equal(root.get("date"), date), cb.equal(childJoin.get("code"), currencyCode));
 		TypedQuery<ExchangeRateEntity> query = entityManager.createQuery(cq);
-		try {
-			ExchangeRateEntity result = query.getSingleResult();
-			return result;
-		} catch (NoResultException e) {
-			return null;
-		}
+		ExchangeRateEntity result = query.getSingleResult();
+		return result;
 	}
 
 	@Override

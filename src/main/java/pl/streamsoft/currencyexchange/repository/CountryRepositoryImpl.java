@@ -3,9 +3,6 @@ package pl.streamsoft.currencyexchange.repository;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -15,10 +12,8 @@ import pl.streamsoft.currencyexchange.entity.CountryEntity;
 
 public class CountryRepositoryImpl implements CountryRepository {
 
-	private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("pgsql");
-
 	private EntityManager getEntityManager() {
-		return emf.createEntityManager();
+		return EntityManagerFactoryHelper.getFactory().createEntityManager();
 	}
 
 	@Override
@@ -37,14 +32,10 @@ public class CountryRepositoryImpl implements CountryRepository {
 		Root<CountryEntity> root = cq.from(CountryEntity.class);
 		cq.select(root).where(cb.equal(root.get("name"), name));
 		TypedQuery<CountryEntity> query = entityManager.createQuery(cq);
-		try {
-			CountryEntity result = query.getSingleResult();
-			return result;
-		} catch (NoResultException e) {
-			return null;
-		}
+		CountryEntity result = query.getSingleResult();
+		return result;
 	}
-	
+
 	@Override
 	public List<CountryEntity> getAllCountries() {
 		EntityManager entityManager = getEntityManager();

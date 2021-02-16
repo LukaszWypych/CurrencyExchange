@@ -30,7 +30,7 @@ public class CountryEntity {
 		return name;
 	}
 
-	public Set<CurrencyEntity> getExchangeRate() {
+	public Set<CurrencyEntity> getCurrencies() {
 		return currencies;
 	}
 
@@ -42,8 +42,8 @@ public class CountryEntity {
 		this.name = name;
 	}
 
-	public void setExchangeRate(Set<CurrencyEntity> exchangeRate) {
-		this.currencies = exchangeRate;
+	public void setCurrencies(Set<CurrencyEntity> currencies) {
+		this.currencies = currencies;
 	}
 
 }

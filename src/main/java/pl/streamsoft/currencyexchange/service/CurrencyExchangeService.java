@@ -8,9 +8,6 @@ import java.util.regex.Pattern;
 
 import pl.streamsoft.currencyexchange.ExchangedCurrency;
 import pl.streamsoft.currencyexchange.entity.ExchangeRateEntity;
-import pl.streamsoft.currencyexchange.repository.CountryRepository;
-import pl.streamsoft.currencyexchange.repository.CurrencyRepository;
-import pl.streamsoft.currencyexchange.repository.ExchangeRateRepository;
 import pl.streamsoft.currencyexchange.service.converter.Converter;
 import pl.streamsoft.currencyexchange.service.datareader.DataReader;
 
@@ -22,7 +19,8 @@ public class CurrencyExchangeService {
 
 	private Converter converter;
 
-	public CurrencyExchangeService(DataReader dataReader, Converter converter, ExchangeRateService exchangeRateService) {
+	public CurrencyExchangeService(DataReader dataReader, Converter converter,
+			ExchangeRateService exchangeRateService) {
 		this.dataReader = dataReader;
 		this.converter = converter;
 		this.exchangeRateService = exchangeRateService;
@@ -33,14 +31,11 @@ public class CurrencyExchangeService {
 		ExchangeRateEntity rate = exchangeRateService.getExchangeRateByCode(currencyCode, date);
 		if (rate == null) {
 			date = getLastDateWithRate(date);
-			String body = dataReader.getExchangeRateBody(currencyCode, date);
-			rate = converter.getExchangeRateFromBody(body);
-			ExchangeRateEntity savedRate = exchangeRateService.getExchangeRateByCode(currencyCode, date);
-			if (savedRate == null) {
+			rate = exchangeRateService.getExchangeRateByCode(currencyCode, date);
+			if (rate == null) {
+				String body = dataReader.getExchangeRateBody(currencyCode, date);
+				rate = converter.getExchangeRateFromBody(body);
 				exchangeRateService.addExchangeRate(rate, currencyCode);
-			} else if (savedRate.getValue().compareTo(rate.getValue()) != 0) {
-				savedRate.setValue(rate.getValue());
-				exchangeRateService.updateExchangeRate(savedRate);
 			}
 		}
 		BigDecimal exchangedValue = value.multiply(rate.getValue()).setScale(2, RoundingMode.HALF_UP);

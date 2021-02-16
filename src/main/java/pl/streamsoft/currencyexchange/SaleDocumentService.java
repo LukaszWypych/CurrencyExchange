@@ -24,9 +24,8 @@ public class SaleDocumentService {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date date;
 		try {
-			date = simpleDateFormat.parse("2021-2-15");
+			date = simpleDateFormat.parse("2021-2-14");
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
 		DataReader dataReader = new DataReaderNBP("json");
@@ -37,7 +36,7 @@ public class SaleDocumentService {
 		ExchangeRateService service = new ExchangeRateService(currencyRepository, exchangeRateRepository,
 				countryRepository);
 		CurrencyExchangeService currencyExchangeService = new CurrencyExchangeService(dataReader, converter, service);
-		ExchangedCurrency exchangedCurrency = currencyExchangeService.exchangeCurrencyToPLN("aud", date,
+		ExchangedCurrency exchangedCurrency = currencyExchangeService.exchangeCurrencyToPLN("uah", date,
 				new BigDecimal("100"));
 		System.out.println("Currency exchanged with the rate on the date "
 				+ simpleDateFormat.format(exchangedCurrency.getDate()) + " is " + exchangedCurrency.getValue());

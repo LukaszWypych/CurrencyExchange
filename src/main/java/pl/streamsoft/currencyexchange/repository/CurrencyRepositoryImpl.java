@@ -3,9 +3,6 @@ package pl.streamsoft.currencyexchange.repository;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -15,10 +12,8 @@ import pl.streamsoft.currencyexchange.entity.CurrencyEntity;
 
 public class CurrencyRepositoryImpl implements CurrencyRepository {
 
-	private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("pgsql");
-
 	private EntityManager getEntityManager() {
-		return emf.createEntityManager();
+		return EntityManagerFactoryHelper.getFactory().createEntityManager();
 	}
 
 	@Override
@@ -37,12 +32,8 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
 		Root<CurrencyEntity> root = cq.from(CurrencyEntity.class);
 		cq.select(root).where(cb.equal(root.get("code"), code));
 		TypedQuery<CurrencyEntity> query = entityManager.createQuery(cq);
-		try {
-			CurrencyEntity result = query.getSingleResult();
-			return result;
-		} catch (NoResultException e) {
-			return null;
-		}
+		CurrencyEntity result = query.getSingleResult();
+		return result;
 	}
 
 	@Override
@@ -60,7 +51,5 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
 	public CurrencyEntity updateCurrency(CurrencyEntity currency) {
 		EntityManager entityManager = getEntityManager();
 		return entityManager.merge(currency);
-
 	}
-
 }

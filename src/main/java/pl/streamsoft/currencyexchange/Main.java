@@ -30,8 +30,10 @@ public class Main {
 		Converter converter = new ConverterJson();
 		CurrencyExchangeService currencyExchangeService = new CurrencyExchangeService(dataReader, converter, service);
 		ExchangedCurrency exchangedCurrency = currencyExchangeService.exchangeCurrencyToPLN("EUR",
-				simpleDateFormat.parse("2021-2-9"), new BigDecimal("100"));
+				simpleDateFormat.parse("2021-2-8"), new BigDecimal("100"));
 		System.out.println("Currency exchanged with the rate on the date "
 				+ simpleDateFormat.format(exchangedCurrency.getDate()) + " is " + exchangedCurrency.getValue());
+//		service.getCountryByName("Ukraine").getCurrencies().forEach(c -> c.getRates()
+//				.forEach(r -> System.out.println(c.getName() + "," + r.getValue() + "," + r.getDate())));
 	}
 }
