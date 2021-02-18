@@ -1,5 +1,6 @@
 package pl.streamsoft.currencyexchange.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import pl.streamsoft.currencyexchange.entity.CurrencyEntity;
@@ -13,4 +14,6 @@ public interface CurrencyRepository {
 	public List<CurrencyEntity> getAllCurrencies();
 
 	public CurrencyEntity updateCurrency(CurrencyEntity currency);
+
+	public CurrencyEntity getCurrencyWithBiggestRateDifferenceInPeriod(Date from, Date to);
 }

@@ -1,16 +1,12 @@
 package pl.streamsoft.currencyexchange.repository;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
 
-import pl.streamsoft.currencyexchange.entity.CurrencyEntity;
 import pl.streamsoft.currencyexchange.entity.ExchangeRateEntity;
 
 public class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
@@ -25,36 +21,37 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
 		entityManager.getTransaction().begin();
 		entityManager.persist(rate);
 		entityManager.getTransaction().commit();
+		entityManager.close();
 	}
 
 	@Override
 	public ExchangeRateEntity getExchangeRateByCode(String currencyCode, Date date) {
 		EntityManager entityManager = getEntityManager();
-		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		CriteriaQuery<ExchangeRateEntity> cq = cb.createQuery(ExchangeRateEntity.class);
-		Root<ExchangeRateEntity> root = cq.from(ExchangeRateEntity.class);
-		Join<ExchangeRateEntity, CurrencyEntity> childJoin = root.join("currency");
-		cq.select(root).where(cb.equal(root.get("date"), date), cb.equal(childJoin.get("code"), currencyCode));
-		TypedQuery<ExchangeRateEntity> query = entityManager.createQuery(cq);
+		TypedQuery<ExchangeRateEntity> query = entityManager.createNamedQuery("ExchangeRate.getByCode",
+				ExchangeRateEntity.class);
+		query.setParameter("code", currencyCode);
+		query.setParameter("date", date);
 		ExchangeRateEntity result = query.getSingleResult();
+		entityManager.close();
 		return result;
 	}
 
 	@Override
 	public List<ExchangeRateEntity> getAllExchangeRates(Date date) {
 		EntityManager entityManager = getEntityManager();
-		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		CriteriaQuery<ExchangeRateEntity> cq = cb.createQuery(ExchangeRateEntity.class);
-		Root<ExchangeRateEntity> rootEntry = cq.from(ExchangeRateEntity.class);
-		CriteriaQuery<ExchangeRateEntity> all = cq.select(rootEntry);
-		TypedQuery<ExchangeRateEntity> allQuery = entityManager.createQuery(all);
-		return allQuery.getResultList();
+		TypedQuery<ExchangeRateEntity> query = entityManager.createNamedQuery("ExchangeRate.getAll",
+				ExchangeRateEntity.class);
+		List<ExchangeRateEntity> resultList = query.getResultList();
+		entityManager.close();
+		return resultList;
 	}
 
 	@Override
 	public ExchangeRateEntity updateExchangeRate(ExchangeRateEntity rate) {
 		EntityManager entityManager = getEntityManager();
-		return entityManager.merge(rate);
+		rate = entityManager.merge(rate);
+		entityManager.close();
+		return rate;
 	}
 
 	@Override
@@ -64,5 +61,52 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
 		entityManager.getTransaction().begin();
 		entityManager.persist(rate);
 		entityManager.getTransaction().commit();
+		entityManager.close();
+	}
+
+	public BigDecimal getMaxRateFromPeriodForCurrency(String currencyCode, Date from, Date to) {
+		EntityManager entityManager = getEntityManager();
+		TypedQuery<BigDecimal> query = entityManager.createNamedQuery("ExchangeRate.getMaxRateFromPeriodForCurrency",
+				BigDecimal.class);
+		query.setParameter("code", currencyCode);
+		query.setParameter("from", from);
+		query.setParameter("to", to);
+		BigDecimal result = query.getSingleResult();
+		entityManager.close();
+		return result;
+	}
+
+	public BigDecimal getMinRateFromPeriodForCurrency(String currencyCode, Date from, Date to) {
+		EntityManager entityManager = getEntityManager();
+		TypedQuery<BigDecimal> query = entityManager.createNamedQuery("ExchangeRate.getMinRateFromPeriodForCurrency",
+				BigDecimal.class);
+		query.setParameter("code", currencyCode);
+		query.setParameter("from", from);
+		query.setParameter("to", to);
+		BigDecimal result = query.getSingleResult();
+		entityManager.close();
+		return result;
+	}
+
+	public List<BigDecimal> getMaxRatesForCurrency(String currencyCode, int limit) {
+		EntityManager entityManager = getEntityManager();
+		TypedQuery<BigDecimal> query = entityManager.createNamedQuery("ExchangeRate.getMaxRatesForCurrency",
+				BigDecimal.class);
+		query.setMaxResults(limit);
+		query.setParameter("code", currencyCode);
+		List<BigDecimal> result = query.getResultList();
+		entityManager.close();
+		return result;
+	}
+
+	public List<BigDecimal> getMinRatesForCurrency(String currencyCode, int limit) {
+		EntityManager entityManager = getEntityManager();
+		TypedQuery<BigDecimal> query = entityManager.createNamedQuery("ExchangeRate.getMinRatesForCurrency",
+				BigDecimal.class);
+		query.setMaxResults(limit);
+		query.setParameter("code", currencyCode);
+		List<BigDecimal> result = query.getResultList();
+		entityManager.close();
+		return result;
 	}
 }

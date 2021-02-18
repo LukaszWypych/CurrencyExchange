@@ -1,5 +1,6 @@
 package pl.streamsoft.currencyexchange.repository;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -16,4 +17,12 @@ public interface ExchangeRateRepository {
 	public ExchangeRateEntity updateExchangeRate(ExchangeRateEntity rate);
 
 	public void deleteExchangeRate(Long id);
+
+	public BigDecimal getMaxRateFromPeriodForCurrency(String currencyCode, Date from, Date to);
+
+	public BigDecimal getMinRateFromPeriodForCurrency(String currencyCode, Date from, Date to);
+
+	public List<BigDecimal> getMaxRatesForCurrency(String currencyCode, int limit);
+
+	public List<BigDecimal> getMinRatesForCurrency(String currencyCode, int limit);
 }

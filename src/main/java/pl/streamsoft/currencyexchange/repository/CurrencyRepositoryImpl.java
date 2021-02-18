@@ -1,12 +1,10 @@
 package pl.streamsoft.currencyexchange.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 import pl.streamsoft.currencyexchange.entity.CurrencyEntity;
 
@@ -22,34 +20,45 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
 		entityManager.getTransaction().begin();
 		entityManager.persist(currency);
 		entityManager.getTransaction().commit();
+		entityManager.close();
 	}
 
 	@Override
 	public CurrencyEntity getCurrencyByCode(String code) {
 		EntityManager entityManager = getEntityManager();
-		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		CriteriaQuery<CurrencyEntity> cq = cb.createQuery(CurrencyEntity.class);
-		Root<CurrencyEntity> root = cq.from(CurrencyEntity.class);
-		cq.select(root).where(cb.equal(root.get("code"), code));
-		TypedQuery<CurrencyEntity> query = entityManager.createQuery(cq);
+		TypedQuery<CurrencyEntity> query = entityManager.createNamedQuery("Currency.getByCode", CurrencyEntity.class);
+		query.setParameter("code", code);
 		CurrencyEntity result = query.getSingleResult();
+		entityManager.close();
 		return result;
 	}
 
 	@Override
 	public List<CurrencyEntity> getAllCurrencies() {
 		EntityManager entityManager = getEntityManager();
-		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		CriteriaQuery<CurrencyEntity> cq = cb.createQuery(CurrencyEntity.class);
-		Root<CurrencyEntity> rootEntry = cq.from(CurrencyEntity.class);
-		CriteriaQuery<CurrencyEntity> all = cq.select(rootEntry);
-		TypedQuery<CurrencyEntity> allQuery = entityManager.createQuery(all);
-		return allQuery.getResultList();
+		TypedQuery<CurrencyEntity> query = entityManager.createNamedQuery("Currency.getAll", CurrencyEntity.class);
+		List<CurrencyEntity> resultList = query.getResultList();
+		entityManager.close();
+		return resultList;
 	}
 
 	@Override
 	public CurrencyEntity updateCurrency(CurrencyEntity currency) {
 		EntityManager entityManager = getEntityManager();
-		return entityManager.merge(currency);
+		currency = entityManager.merge(currency);
+		entityManager.close();
+		return currency;
+	}
+
+	public CurrencyEntity getCurrencyWithBiggestRateDifferenceInPeriod(Date from, Date to) {
+		EntityManager entityManager = getEntityManager();
+		TypedQuery<CurrencyEntity> query = entityManager.createNamedQuery("Currency.getByBiggestRateDifferenceInPeriod",
+				CurrencyEntity.class);
+		query.setMaxResults(1);
+		query.setParameter("from", from);
+		query.setParameter("to", to);
+		CurrencyEntity result = query.getSingleResult();
+		entityManager.close();
+		return result;
 	}
 }

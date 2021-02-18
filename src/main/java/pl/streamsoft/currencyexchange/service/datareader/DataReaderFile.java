@@ -31,7 +31,6 @@ public class DataReaderFile implements DataReader {
 	}
 
 	private File getFile(Date date) {
-
 		File file = new File(folderPath + date.toString() + "." + extention);
 		if (!file.exists()) {
 			throw new CurrencyNotFoundException("Currency file not found");

@@ -14,5 +14,4 @@ public class EntityManagerFactoryHelper {
 	public static EntityManagerFactory getFactory() {
 		return factory;
 	}
-
 }

@@ -4,10 +4,12 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import pl.streamsoft.currencyexchange.ExchangedCurrency;
 import pl.streamsoft.currencyexchange.entity.ExchangeRateEntity;
+import pl.streamsoft.currencyexchange.exception.CurrencyNotFoundException;
 import pl.streamsoft.currencyexchange.service.converter.Converter;
 import pl.streamsoft.currencyexchange.service.datareader.DataReader;
 
@@ -15,13 +17,13 @@ public class CurrencyExchangeService {
 
 	private ExchangeRateService exchangeRateService;
 
-	private DataReader dataReader;
+	private Set<DataReader> dataReaders;
 
 	private Converter converter;
 
-	public CurrencyExchangeService(DataReader dataReader, Converter converter,
+	public CurrencyExchangeService(Set<DataReader> dataReaders, Converter converter,
 			ExchangeRateService exchangeRateService) {
-		this.dataReader = dataReader;
+		this.dataReaders = dataReaders;
 		this.converter = converter;
 		this.exchangeRateService = exchangeRateService;
 	}
@@ -33,7 +35,7 @@ public class CurrencyExchangeService {
 			date = getLastDateWithRate(date);
 			rate = exchangeRateService.getExchangeRateByCode(currencyCode, date);
 			if (rate == null) {
-				String body = dataReader.getExchangeRateBody(currencyCode, date);
+				String body = getBodyFromReaders(date, currencyCode);
 				rate = converter.getExchangeRateFromBody(body);
 				exchangeRateService.addExchangeRate(rate, currencyCode);
 			}
@@ -60,10 +62,28 @@ public class CurrencyExchangeService {
 		Calendar c = Calendar.getInstance();
 		c.setTime(date);
 		while (true) {
-			if (dataReader.isDateValid(c.getTime())) {
-				return c.getTime();
+			for (DataReader d : dataReaders) {
+				if (d.isDateValid(c.getTime())) {
+					return c.getTime();
+				}
 			}
 			c.add(Calendar.DATE, -1);
 		}
+	}
+
+	private String getBodyFromReaders(Date date, String currencyCode) {
+		String body = null;
+		for (DataReader d : dataReaders) {
+			try {
+				body = d.getExchangeRateBody(currencyCode, date);
+				break;
+			} catch (CurrencyNotFoundException e) {
+				continue;
+			}
+		}
+		if (body == null) {
+			throw new CurrencyNotFoundException("Currency not found");
+		}
+		return body;
 	}
 }

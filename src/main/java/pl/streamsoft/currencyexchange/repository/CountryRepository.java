@@ -11,4 +11,6 @@ public interface CountryRepository {
 	public CountryEntity getCountryByName(String name);
 
 	public List<CountryEntity> getAllCountries();
+
+	public List<CountryEntity> getCountriesWithCurrencies(int currencies);
 }

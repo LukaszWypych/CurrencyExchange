@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedHashSet;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,9 @@ public class CurrencyExchangeServiceTest {
 		dataReader = mock(DataReader.class);
 		converter = mock(Converter.class);
 		exchangeRateService = mock(ExchangeRateService.class);
-		currencyExchangeService = new CurrencyExchangeService(dataReader, converter, exchangeRateService);
+		LinkedHashSet<DataReader> dataReaders = new LinkedHashSet<>();
+		dataReaders.add(dataReader);
+		currencyExchangeService = new CurrencyExchangeService(dataReaders, converter, exchangeRateService);
 		currencyCode = "usd";
 		date = new Date();
 		value = new BigDecimal("100");
