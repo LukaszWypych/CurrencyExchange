@@ -20,14 +20,14 @@ import javax.persistence.Table;
 @Table(name = "currencies")
 @NamedQueries({ @NamedQuery(name = "Currency.getByCode", query = "SELECT c FROM CurrencyEntity c WHERE c.code = :code"),
 		@NamedQuery(name = "Currency.getAll", query = "SELECT c FROM CurrencyEntity c"),
-		@NamedQuery(name = "Currency.getByBiggestRateDifferenceInPeriod", query = "SELECT c FROM CurrencyEntity c JOIN c.rates e WHERE e.date >= :from AND e.date <= :to GROUP BY c.id ORDER BY (max(e.rate) - min(e.rate)) DESC") })
-@NamedNativeQueries({
-		@NamedNativeQuery(name = "Currency.getByBiggestRateDifferenceInPeriodTest", query = "SELECT * FROM currencies c ORDER BY "
-				+ "ABS("
-				+ "(SELECT r1 FROM exchange_rates r1 WHERE r1.currency_id=c.id AND r1.date<= :from ORDER BY r1.date DESC LIMIT 1).rate "
-				+ "- "
-				+ "(SELECT r2 FROM exchange_rates r2 WHERE r2.currency_id=c.id AND r2.date<= :to ORDER BY r2.date DESC LIMIT 1).rate"
-				+ ") DESC LIMIT 1", resultClass = CurrencyEntity.class) })
+		@NamedQuery(name = "Currency.getByBiggestRateDifferenceInPeriodOld", query = "SELECT c FROM CurrencyEntity c JOIN c.rates e WHERE e.date >= :from AND e.date <= :to GROUP BY c.id ORDER BY (max(e.rate) - min(e.rate)) DESC") })
+@NamedNativeQueries({ @NamedNativeQuery(name = "Currency.getByBiggestRateDifferenceInPeriod", query = "SELECT * FROM "
+		+ "(SELECT c1.id,c1.name,c1.code FROM currencies c1 INNER JOIN exchange_rates e ON e.currency_id = c1.id AND e.date<=:from GROUP BY c1.id) c "
+		+ "ORDER BY " + "ABS("
+		+ "(SELECT r1 FROM exchange_rates r1 WHERE r1.currency_id=c.id AND r1.date<= :from ORDER BY r1.date DESC LIMIT 1).rate "
+		+ "- "
+		+ "(SELECT r2 FROM exchange_rates r2 WHERE r2.currency_id=c.id AND r2.date<= :to ORDER BY r2.date DESC LIMIT 1).rate"
+		+ ") DESC LIMIT 1", resultClass = CurrencyEntity.class) })
 
 public class CurrencyEntity {
 // JOIN exchange_rates e ON e.currency_id=c.id

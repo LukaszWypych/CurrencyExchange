@@ -53,7 +53,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
 
 	public CurrencyEntity getCurrencyWithBiggestRateDifferenceInPeriod(Date from, Date to) {
 		EntityManager entityManager = getEntityManager();
-		Query query = entityManager.createNamedQuery("Currency.getByBiggestRateDifferenceInPeriodTest");
+		Query query = entityManager.createNamedQuery("Currency.getByBiggestRateDifferenceInPeriod");
 //		TypedQuery<CurrencyEntity> query = entityManager
 //				.createNamedQuery("Currency.getByBiggestRateDifferenceInPeriodTest", CurrencyEntity.class);
 //		query.setMaxResults(1);
