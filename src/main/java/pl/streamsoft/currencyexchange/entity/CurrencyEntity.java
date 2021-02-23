@@ -9,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -19,8 +21,16 @@ import javax.persistence.Table;
 @NamedQueries({ @NamedQuery(name = "Currency.getByCode", query = "SELECT c FROM CurrencyEntity c WHERE c.code = :code"),
 		@NamedQuery(name = "Currency.getAll", query = "SELECT c FROM CurrencyEntity c"),
 		@NamedQuery(name = "Currency.getByBiggestRateDifferenceInPeriod", query = "SELECT c FROM CurrencyEntity c JOIN c.rates e WHERE e.date >= :from AND e.date <= :to GROUP BY c.id ORDER BY (max(e.rate) - min(e.rate)) DESC") })
-public class CurrencyEntity {
+@NamedNativeQueries({
+		@NamedNativeQuery(name = "Currency.getByBiggestRateDifferenceInPeriodTest", query = "SELECT * FROM currencies c ORDER BY "
+				+ "ABS("
+				+ "(SELECT r1 FROM exchange_rates r1 WHERE r1.currency_id=c.id AND r1.date<= :from ORDER BY r1.date DESC LIMIT 1).rate "
+				+ "- "
+				+ "(SELECT r2 FROM exchange_rates r2 WHERE r2.currency_id=c.id AND r2.date<= :to ORDER BY r2.date DESC LIMIT 1).rate"
+				+ ") DESC LIMIT 1", resultClass = CurrencyEntity.class) })
 
+public class CurrencyEntity {
+// JOIN exchange_rates e ON e.currency_id=c.id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
 	private Long id;

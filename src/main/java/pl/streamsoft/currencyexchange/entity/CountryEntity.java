@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table(name = "countries")
 @NamedQueries({ @NamedQuery(name = "Country.getByName", query = "SELECT c FROM CountryEntity c WHERE c.name = :name"),
 		@NamedQuery(name = "Country.getAll", query = "SELECT c FROM CountryEntity c"),
-		@NamedQuery(name = "Country.getByCurrenciesAmount", query = "SELECT c FROM CountryEntity c WHERE size(c.currencies) >= :currencies") })
+		@NamedQuery(name = "Country.getByCurrenciesAmount", query = "SELECT c FROM CountryEntity c WHERE size(c.currencies) >= :amount") })
 public class CountryEntity {
 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

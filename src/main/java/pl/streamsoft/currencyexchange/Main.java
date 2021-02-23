@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashSet;
 
+import pl.streamsoft.currencyexchange.entity.CurrencyEntity;
 import pl.streamsoft.currencyexchange.repository.CountryRepository;
 import pl.streamsoft.currencyexchange.repository.CountryRepositoryImpl;
 import pl.streamsoft.currencyexchange.repository.CurrencyRepository;
@@ -30,19 +31,19 @@ public class Main {
 		LinkedHashSet<DataReader> dataReaders = new LinkedHashSet<>();
 		dataReaders.add(dataReader);
 
-//		countryRepository.getCountriesWithCurrencies(2).forEach(c -> System.out.println(c.getName()));
+//		service.getCountriesWithCurrencies(2).forEach(c -> System.out.println(c.getName()));
 
-//		CurrencyEntity c = currencyRepository.getCurrencyWithBiggestRateDifferenceInPeriod(
-//				simpleDateFormat.parse("2021-1-10"), simpleDateFormat.parse("2021-3-11"));
-//		System.out.println(c.getName());
+		CurrencyEntity c = service.getCurrencyWithBiggestRateDifferenceInPeriod(simpleDateFormat.parse("2021-1-15"),
+				simpleDateFormat.parse("2021-3-11"));
+		System.out.println(c.getName());
 
-//		BigDecimal r = exchangeRateRepository.getMaxRateFromPeriodForCurrency("USD",
-//				simpleDateFormat.parse("2021-1-10"), simpleDateFormat.parse("2021-3-11"));
-//		BigDecimal r = exchangeRateRepository.getMinRateFromPeriodForCurrency("USD",
-//				simpleDateFormat.parse("2021-1-10"), simpleDateFormat.parse("2021-3-11"));
+//		BigDecimal r = service.getMaxRateFromPeriodForCurrency("USD", simpleDateFormat.parse("2021-1-10"),
+//				simpleDateFormat.parse("2021-3-11"));
+//		BigDecimal r = service.getMinRateFromPeriodForCurrency("USD", simpleDateFormat.parse("2021-1-10"),
+//				simpleDateFormat.parse("2021-3-11"));
 //		System.out.println(r);
-//		exchangeRateRepository.getMaxRatesForCurrency("EUR", 2).forEach(v -> System.out.println(v));
-//		exchangeRateRepository.getMinRatesForCurrency("USD", 2).forEach(v -> System.out.println(v));
+//		service.getMaxRatesForCurrency("jpy", 2).forEach(v -> System.out.println(v));
+//		service.getMinRatesForCurrency("jpy", 2).forEach(v -> System.out.println(v));
 
 //		CurrencyExchangeService currencyExchangeService = new CurrencyExchangeService(dataReaders, converter, service);
 //		ExchangedCurrency exchangedCurrency = currencyExchangeService.exchangeCurrencyToPLN("usd",

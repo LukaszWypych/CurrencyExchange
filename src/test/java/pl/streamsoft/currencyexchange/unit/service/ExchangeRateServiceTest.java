@@ -1,4 +1,4 @@
-package pl.streamsoft.currencyexchange.service;
+package pl.streamsoft.currencyexchange.unit.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -14,6 +14,7 @@ import pl.streamsoft.currencyexchange.entity.CurrencyEntity;
 import pl.streamsoft.currencyexchange.repository.CountryRepository;
 import pl.streamsoft.currencyexchange.repository.CurrencyRepository;
 import pl.streamsoft.currencyexchange.repository.ExchangeRateRepository;
+import pl.streamsoft.currencyexchange.service.ExchangeRateService;
 
 public class ExchangeRateServiceTest {
 

@@ -1,4 +1,4 @@
-package pl.streamsoft.currencyexchange.service;
+package pl.streamsoft.currencyexchange.unit.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -19,6 +19,8 @@ import org.mockito.stubbing.Answer;
 
 import pl.streamsoft.currencyexchange.ExchangedCurrency;
 import pl.streamsoft.currencyexchange.entity.ExchangeRateEntity;
+import pl.streamsoft.currencyexchange.service.CurrencyExchangeService;
+import pl.streamsoft.currencyexchange.service.ExchangeRateService;
 import pl.streamsoft.currencyexchange.service.converter.Converter;
 import pl.streamsoft.currencyexchange.service.datareader.DataReader;
 

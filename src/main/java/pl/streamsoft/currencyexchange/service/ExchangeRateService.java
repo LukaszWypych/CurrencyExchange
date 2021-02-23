@@ -1,6 +1,8 @@
 package pl.streamsoft.currencyexchange.service;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.NoResultException;
 
@@ -99,5 +101,29 @@ public class ExchangeRateService {
 			addCountry(countryEntity);
 		}
 		currencyEntity.getCountries().add(countryEntity);
+	}
+
+	public BigDecimal getMaxRateFromPeriodForCurrency(String currencyCode, Date from, Date to) {
+		return exchangeRateRepository.getMaxRateFromPeriodForCurrency(currencyCode.toUpperCase(), from, to);
+	}
+
+	public BigDecimal getMinRateFromPeriodForCurrency(String currencyCode, Date from, Date to) {
+		return exchangeRateRepository.getMinRateFromPeriodForCurrency(currencyCode.toUpperCase(), from, to);
+	}
+
+	public List<BigDecimal> getMaxRatesForCurrency(String currencyCode, int limit) {
+		return exchangeRateRepository.getMaxRatesForCurrency(currencyCode.toUpperCase(), limit);
+	}
+
+	public List<BigDecimal> getMinRatesForCurrency(String currencyCode, int limit) {
+		return exchangeRateRepository.getMinRatesForCurrency(currencyCode.toUpperCase(), limit);
+	}
+
+	public List<CountryEntity> getCountriesWithCurrencies(int currencies) {
+		return countryRepository.getCountriesWithAmountOfCurrencies(currencies);
+	}
+
+	public CurrencyEntity getCurrencyWithBiggestRateDifferenceInPeriod(Date from, Date to) {
+		return currencyRepository.getCurrencyWithBiggestRateDifferenceInPeriod(from, to);
 	}
 }

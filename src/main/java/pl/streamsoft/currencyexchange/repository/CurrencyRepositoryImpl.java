@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import pl.streamsoft.currencyexchange.entity.CurrencyEntity;
@@ -52,12 +53,13 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
 
 	public CurrencyEntity getCurrencyWithBiggestRateDifferenceInPeriod(Date from, Date to) {
 		EntityManager entityManager = getEntityManager();
-		TypedQuery<CurrencyEntity> query = entityManager.createNamedQuery("Currency.getByBiggestRateDifferenceInPeriod",
-				CurrencyEntity.class);
-		query.setMaxResults(1);
+		Query query = entityManager.createNamedQuery("Currency.getByBiggestRateDifferenceInPeriodTest");
+//		TypedQuery<CurrencyEntity> query = entityManager
+//				.createNamedQuery("Currency.getByBiggestRateDifferenceInPeriodTest", CurrencyEntity.class);
+//		query.setMaxResults(1);
 		query.setParameter("from", from);
 		query.setParameter("to", to);
-		CurrencyEntity result = query.getSingleResult();
+		CurrencyEntity result = (CurrencyEntity) query.getSingleResult();
 		entityManager.close();
 		return result;
 	}
