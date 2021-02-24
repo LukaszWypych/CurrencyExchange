@@ -119,8 +119,8 @@ public class ExchangeRateService {
 		return exchangeRateRepository.getMinRatesForCurrency(currencyCode.toUpperCase(), limit);
 	}
 
-	public List<CountryEntity> getCountriesWithCurrencies(int currencies) {
-		return countryRepository.getCountriesWithAmountOfCurrencies(currencies);
+	public List<CountryEntity> getCountriesWithMultipleCurrencies(int amountOfCurrencies) {
+		return countryRepository.getCountriesWithMultipleCurrencies(amountOfCurrencies);
 	}
 
 	public CurrencyEntity getCurrencyWithHighestRateDifferenceInPeriod(Date from, Date to) {

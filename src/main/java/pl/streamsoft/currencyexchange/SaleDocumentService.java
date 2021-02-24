@@ -30,14 +30,16 @@ public class SaleDocumentService {
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
-		DataReader dataReader = new DataReaderNBP("json");
-		DataReader dataReader2 = new DataReaderFile("C", "json");
-		Converter converter = new ConverterJson();
+
 		ExchangeRateRepository exchangeRateRepository = new ExchangeRateRepositoryImpl();
 		CurrencyRepository currencyRepository = new CurrencyRepositoryImpl();
 		CountryRepository countryRepository = new CountryRepositoryImpl();
 		ExchangeRateService service = new ExchangeRateService(currencyRepository, exchangeRateRepository,
 				countryRepository);
+
+		DataReader dataReader = new DataReaderNBP("json");
+		DataReader dataReader2 = new DataReaderFile("C", "json");
+		Converter converter = new ConverterJson();
 		LinkedHashSet<DataReader> dataReaders = new LinkedHashSet<>();
 		dataReaders.add(dataReader2);
 		dataReaders.add(dataReader);

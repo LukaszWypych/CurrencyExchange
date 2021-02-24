@@ -12,5 +12,5 @@ public interface CountryRepository {
 
 	public List<CountryEntity> getAllCountries();
 
-	public List<CountryEntity> getCountriesWithAmountOfCurrencies(int amount);
+	public List<CountryEntity> getCountriesWithMultipleCurrencies(int amountOfCurrencies);
 }

@@ -41,7 +41,7 @@ public class CountryRepositoryImpl implements CountryRepository {
 		return resultList;
 	}
 
-	public List<CountryEntity> getCountriesWithAmountOfCurrencies(int amount) {
+	public List<CountryEntity> getCountriesWithMultipleCurrencies(int amount) {
 		EntityManager entityManager = getEntityManager();
 		TypedQuery<CountryEntity> query = entityManager.createNamedQuery("Country.getByCurrenciesAmount",
 				CountryEntity.class);

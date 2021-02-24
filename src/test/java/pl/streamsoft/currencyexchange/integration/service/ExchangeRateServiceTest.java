@@ -60,12 +60,13 @@ public class ExchangeRateServiceTest {
 		String currencyCode = "JPY";
 		Date from = simpleDateFormat.parse("2021-02-10");
 		Date to = simpleDateFormat.parse("2021-02-13");
+		BigDecimal maxRateForJPY = new BigDecimal("5.0010");
 
 		// when
 		BigDecimal result = exchangeRateService.getMaxRateFromPeriodForCurrency(currencyCode, from, to);
 
 		// then
-		assertThat(result).isEqualTo(new BigDecimal("5.0010"));
+		assertThat(result).isEqualTo(maxRateForJPY);
 	}
 
 	@Test
@@ -74,12 +75,13 @@ public class ExchangeRateServiceTest {
 		String currencyCode = "JPY";
 		Date from = simpleDateFormat.parse("2021-02-10");
 		Date to = simpleDateFormat.parse("2021-02-13");
+		BigDecimal minRateForJPY = new BigDecimal("5.0000");
 
 		// when
 		BigDecimal result = exchangeRateService.getMinRateFromPeriodForCurrency(currencyCode, from, to);
 
 		// then
-		assertThat(result).isEqualTo(new BigDecimal("5.0000"));
+		assertThat(result).isEqualTo(minRateForJPY);
 	}
 
 	@Test
@@ -87,14 +89,16 @@ public class ExchangeRateServiceTest {
 		// given
 		String currencyCode = "USD";
 		int limit = 2;
+		BigDecimal maxUSDValue = new BigDecimal("1.4321");
+		BigDecimal midUSDValue = new BigDecimal("1.2222");
 
 		// when
 		List<BigDecimal> result = exchangeRateService.getMaxRatesForCurrency(currencyCode, limit);
 
 		// then
 		assertThat(result).hasSize(limit);
-		assertThat(result.get(0)).isEqualTo(new BigDecimal("1.4321"));
-		assertThat(result.get(1)).isEqualTo(new BigDecimal("1.2222"));
+		assertThat(result.get(0)).isEqualTo(maxUSDValue);
+		assertThat(result.get(1)).isEqualTo(midUSDValue);
 	}
 
 	@Test
@@ -102,26 +106,31 @@ public class ExchangeRateServiceTest {
 		// given
 		String currencyCode = "USD";
 		int limit = 2;
+		BigDecimal minUSDValue = new BigDecimal("1.1234");
+		BigDecimal midUSDValue = new BigDecimal("1.2222");
 
 		// when
 		List<BigDecimal> result = exchangeRateService.getMinRatesForCurrency(currencyCode, limit);
 
 		// then
 		assertThat(result).hasSize(limit);
-		assertThat(result.get(0)).isEqualTo(new BigDecimal("1.1234"));
-		assertThat(result.get(1)).isEqualTo(new BigDecimal("1.2222"));
+		assertThat(result.get(0)).isEqualTo(minUSDValue);
+		assertThat(result.get(1)).isEqualTo(midUSDValue);
 	}
 
 	@Test
-	void shouldGetCountriesWithCurrencies() {
+	void shouldGetCountriesWithMultipleCurrencies() {
 		// given
-		int amountOfCurrencies = 2;
+		int amountOfCurrenciesInCountry = 2;
+		int amountOfCountriesWithMultipleCurrencies = 2;
 
 		// when
-		List<CountryEntity> result = exchangeRateService.getCountriesWithCurrencies(amountOfCurrencies);
+		List<CountryEntity> result = exchangeRateService
+				.getCountriesWithMultipleCurrencies(amountOfCurrenciesInCountry);
 
 		// then
-		assertThat(result).hasSize(amountOfCurrencies);
+		assertThat(result).hasSize(amountOfCountriesWithMultipleCurrencies);
+		assertThat(result).allMatch(c -> c.getCurrencies().size() >= amountOfCurrenciesInCountry);
 	}
 
 	@Test
@@ -129,11 +138,12 @@ public class ExchangeRateServiceTest {
 		// given
 		Date from = simpleDateFormat.parse("2021-02-10");
 		Date to = simpleDateFormat.parse("2021-02-13");
+		String codeOfCurrencyWithHighestRateDiffrence = "EUR";
 
 		// when
 		CurrencyEntity result = exchangeRateService.getCurrencyWithHighestRateDifferenceInPeriod(from, to);
 
 		// then
-		assertThat(result.getCode()).isEqualTo("EUR");
+		assertThat(result.getCode()).isEqualTo(codeOfCurrencyWithHighestRateDiffrence);
 	}
 }
