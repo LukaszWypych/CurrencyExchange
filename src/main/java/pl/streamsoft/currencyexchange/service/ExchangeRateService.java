@@ -51,17 +51,13 @@ public class ExchangeRateService {
 		exchangeRateRepository.updateExchangeRate(rate);
 	}
 
+	public void addCurrency(CurrencyEntity currencyEntity) {
+		currencyRepository.addCurrency(currencyEntity);
+	}
+
 	public CurrencyEntity getCurrencyByCode(String currencyCode) {
 		try {
 			return currencyRepository.getCurrencyByCode(currencyCode.toUpperCase());
-		} catch (NoResultException e) {
-			return null;
-		}
-	}
-
-	public CountryEntity getCountryByName(String name) {
-		try {
-			return countryRepository.getCountryByName(name);
 		} catch (NoResultException e) {
 			return null;
 		}
@@ -71,8 +67,12 @@ public class ExchangeRateService {
 		countryRepository.addCountry(countryEntity);
 	}
 
-	public void addCurrency(CurrencyEntity currencyEntity) {
-		currencyRepository.addCurrency(currencyEntity);
+	public CountryEntity getCountryByName(String name) {
+		try {
+			return countryRepository.getCountryByName(name);
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	public void addCurrencyToRate(ExchangeRateEntity rate, String currencyCode) {
@@ -123,7 +123,7 @@ public class ExchangeRateService {
 		return countryRepository.getCountriesWithAmountOfCurrencies(currencies);
 	}
 
-	public CurrencyEntity getCurrencyWithBiggestRateDifferenceInPeriod(Date from, Date to) {
-		return currencyRepository.getCurrencyWithBiggestRateDifferenceInPeriod(from, to);
+	public CurrencyEntity getCurrencyWithHighestRateDifferenceInPeriod(Date from, Date to) {
+		return currencyRepository.getCurrencyWithHighestRateDifferenceInPeriod(from, to);
 	}
 }

@@ -125,13 +125,13 @@ public class ExchangeRateServiceTest {
 	}
 
 	@Test
-	void shouldGetCurrencyWithBiggestRateDifferenceInPeriod() throws ParseException {
+	void shouldGetCurrencyWithHighestRateDifferenceInPeriod() throws ParseException {
 		// given
 		Date from = simpleDateFormat.parse("2021-02-10");
 		Date to = simpleDateFormat.parse("2021-02-13");
 
 		// when
-		CurrencyEntity result = exchangeRateService.getCurrencyWithBiggestRateDifferenceInPeriod(from, to);
+		CurrencyEntity result = exchangeRateService.getCurrencyWithHighestRateDifferenceInPeriod(from, to);
 
 		// then
 		assertThat(result.getCode()).isEqualTo("EUR");

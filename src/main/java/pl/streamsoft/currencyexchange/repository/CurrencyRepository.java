@@ -15,5 +15,5 @@ public interface CurrencyRepository {
 
 	public CurrencyEntity updateCurrency(CurrencyEntity currency);
 
-	public CurrencyEntity getCurrencyWithBiggestRateDifferenceInPeriod(Date from, Date to);
+	public CurrencyEntity getCurrencyWithHighestRateDifferenceInPeriod(Date from, Date to);
 }

@@ -51,11 +51,11 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
 		return currency;
 	}
 
-	public CurrencyEntity getCurrencyWithBiggestRateDifferenceInPeriod(Date from, Date to) {
+	public CurrencyEntity getCurrencyWithHighestRateDifferenceInPeriod(Date from, Date to) {
 		EntityManager entityManager = getEntityManager();
-		Query query = entityManager.createNamedQuery("Currency.getByBiggestRateDifferenceInPeriod");
+		Query query = entityManager.createNamedQuery("Currency.getByHighestRateDifferenceInPeriod");
 //		TypedQuery<CurrencyEntity> query = entityManager
-//				.createNamedQuery("Currency.getByBiggestRateDifferenceInPeriodTest", CurrencyEntity.class);
+//				.createNamedQuery("Currency.getByHighestRateDifferenceInPeriodOld", CurrencyEntity.class);
 //		query.setMaxResults(1);
 		query.setParameter("from", from);
 		query.setParameter("to", to);

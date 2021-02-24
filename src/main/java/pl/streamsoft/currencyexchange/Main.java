@@ -33,7 +33,7 @@ public class Main {
 
 //		service.getCountriesWithCurrencies(2).forEach(c -> System.out.println(c.getName()));
 
-		CurrencyEntity c = service.getCurrencyWithBiggestRateDifferenceInPeriod(simpleDateFormat.parse("2021-1-15"),
+		CurrencyEntity c = service.getCurrencyWithHighestRateDifferenceInPeriod(simpleDateFormat.parse("2021-1-10"),
 				simpleDateFormat.parse("2021-3-11"));
 		System.out.println(c.getName());
 
