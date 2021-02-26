@@ -8,12 +8,6 @@ import java.util.LinkedHashSet;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import pl.streamsoft.currencyexchange.repository.CountryRepository;
-import pl.streamsoft.currencyexchange.repository.CountryRepositoryImpl;
-import pl.streamsoft.currencyexchange.repository.CurrencyRepository;
-import pl.streamsoft.currencyexchange.repository.CurrencyRepositoryImpl;
-import pl.streamsoft.currencyexchange.repository.ExchangeRateRepository;
-import pl.streamsoft.currencyexchange.repository.ExchangeRateRepositoryImpl;
 import pl.streamsoft.currencyexchange.service.CurrencyExchangeService;
 import pl.streamsoft.currencyexchange.service.ExchangeRateService;
 import pl.streamsoft.currencyexchange.service.converter.Converter;
@@ -28,20 +22,14 @@ public class SaleDocumentService {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date date;
 		try {
-			date = simpleDateFormat.parse("2021-2-12");
+			date = simpleDateFormat.parse("2021-2-15");
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
 
-		ExchangeRateRepository exchangeRateRepository = new ExchangeRateRepositoryImpl();
-		CurrencyRepository currencyRepository = new CurrencyRepositoryImpl();
-		CountryRepository countryRepository = new CountryRepositoryImpl();
-//		ExchangeRateService service = new ExchangeRateService(currencyRepository, exchangeRateRepository,
-//				countryRepository);
-
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
 		ExchangeRateService service = context.getBean(ExchangeRateService.class);
-		context.close();
+
 		DataReader dataReader = new DataReaderNBP("json");
 		DataReader dataReader2 = new DataReaderFile("C", "json");
 		Converter converter = new ConverterJson();
@@ -49,10 +37,11 @@ public class SaleDocumentService {
 		dataReaders.add(dataReader2);
 		dataReaders.add(dataReader);
 		CurrencyExchangeService currencyExchangeService = new CurrencyExchangeService(dataReaders, converter, service);
-		ExchangedCurrency exchangedCurrency = currencyExchangeService.exchangeCurrencyToPLN("usd", date,
+		ExchangedCurrency exchangedCurrency = currencyExchangeService.exchangeCurrencyToPLN("jpy", date,
 				new BigDecimal("100"));
 		System.out.println("Currency exchanged with the rate on the date "
 				+ simpleDateFormat.format(exchangedCurrency.getDate()) + " is " + exchangedCurrency.getValue());
+		context.close();
 	}
 
 	public static void main(String[] args) {

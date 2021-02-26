@@ -28,7 +28,6 @@ public class Main {
 		CountryRepository countryRepository = new CountryRepositoryImpl();
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
 		ExchangeRateService service = context.getBean(ExchangeRateService.class);
-		context.close();
 //		ExchangeRateService service = new ExchangeRateService(currencyRepository, exchangeRateRepository,
 //				countryRepository);
 		DataReader dataReader = new DataReaderNBP("json");
@@ -38,7 +37,7 @@ public class Main {
 
 //		service.getCountriesWithCurrencies(2).forEach(c -> System.out.println(c.getName()));
 
-		CurrencyEntity c = service.getCurrencyWithHighestRateDifferenceInPeriod(simpleDateFormat.parse("2021-1-10"),
+		CurrencyEntity c = service.getCurrencyWithHighestRateDifferenceInPeriod(simpleDateFormat.parse("2021-2-12"),
 				simpleDateFormat.parse("2021-3-11"));
 		System.out.println(c.getName());
 
@@ -58,5 +57,6 @@ public class Main {
 //		service.getCountryByName("Ukraine").getCurrencies().forEach(c -> c.getRates()
 //				.forEach(r -> System.out.println(c.getName() + "," + r.getValue() + "," + r.getDate())));
 //		service.addExchangeRate(new ExchangeRateEntity(new BigDecimal("3"), new Date()), "XXX");
+		context.close();
 	}
 }

@@ -28,8 +28,6 @@
 //
 //public class ExchangeRateServiceTest {
 //
-//	private static EntityManagerFactory factory;
-//
 //	private CountryRepository countryRepository;
 //
 //	private CurrencyRepository currencyRepository;
@@ -39,12 +37,6 @@
 //	private ExchangeRateService exchangeRateService;
 //
 //	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//
-//	@BeforeAll
-//	static void init() {
-//		factory = Persistence.createEntityManagerFactory("test");
-//		EntityManagerFactoryHelper.setFactory(factory);
-//	}
 //
 //	@BeforeEach
 //	void setup() {

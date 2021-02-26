@@ -14,17 +14,11 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import pl.streamsoft.currencyexchange.repository.CountryRepository;
-import pl.streamsoft.currencyexchange.repository.CountryRepositoryImpl;
-import pl.streamsoft.currencyexchange.repository.CurrencyRepository;
-import pl.streamsoft.currencyexchange.repository.CurrencyRepositoryImpl;
-import pl.streamsoft.currencyexchange.repository.ExchangeRateRepository;
-import pl.streamsoft.currencyexchange.repository.ExchangeRateRepositoryImpl;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @ComponentScan("pl.streamsoft.currencyexchange")
-//@EnableTransactionManagement
+@EnableTransactionManagement
 public class Config {
 
 	@Bean(name = "entityManagerFactory")
@@ -72,20 +66,5 @@ public class Config {
 		properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL10Dialect");
 
 		return properties;
-	}
-
-	@Bean
-	public CountryRepository countryRepository() {
-		return new CountryRepositoryImpl();
-	}
-
-	@Bean
-	public CurrencyRepository currencyRepository() {
-		return new CurrencyRepositoryImpl();
-	}
-
-	@Bean
-	public ExchangeRateRepository exchangeRateRepository() {
-		return new ExchangeRateRepositoryImpl();
 	}
 }

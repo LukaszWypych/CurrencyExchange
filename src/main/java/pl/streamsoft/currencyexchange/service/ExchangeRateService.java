@@ -23,21 +23,19 @@ import pl.streamsoft.currencyexchange.repository.ExchangeRateRepository;
 @Service
 public class ExchangeRateService {
 
-	@Autowired
 	private CurrencyRepository currencyRepository;
 
-	@Autowired
 	private ExchangeRateRepository exchangeRateRepository;
 
-	@Autowired
 	private CountryRepository countryRepository;
 
-//	public ExchangeRateService(CurrencyRepository currencyRepository, ExchangeRateRepository exchangeRateRepository,
-//			CountryRepository countryRepository) {
-////		this.currencyRepository = currencyRepository;
-////		this.exchangeRateRepository = exchangeRateRepository;
-////		this.countryRepository = countryRepository;
-//	}
+	@Autowired
+	public ExchangeRateService(CurrencyRepository currencyRepository, ExchangeRateRepository exchangeRateRepository,
+			CountryRepository countryRepository) {
+		this.currencyRepository = currencyRepository;
+		this.exchangeRateRepository = exchangeRateRepository;
+		this.countryRepository = countryRepository;
+	}
 
 	public void addExchangeRate(ExchangeRateEntity rate, String currencyCode) {
 		if (rate.getCurrency() == null) {
