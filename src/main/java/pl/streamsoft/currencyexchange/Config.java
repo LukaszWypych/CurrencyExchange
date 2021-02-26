@@ -21,16 +21,15 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class Config {
 
-	@Bean(name = "entityManagerFactory")
+	@Bean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 		em.setDataSource(dataSource());
-		em.setPackagesToScan(new String[] { "pl.streamsoft.currencyexchange" });
+		em.setPackagesToScan(new String[] { "pl.streamsoft.currencyexchange.entity" });
 
 		JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		em.setJpaVendorAdapter(vendorAdapter);
 		em.setJpaProperties(additionalProperties());
-		em.setPersistenceUnitName("pgsqll");
 
 		return em;
 	}

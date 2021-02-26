@@ -18,7 +18,7 @@ import pl.streamsoft.currencyexchange.entity.ExchangeRateEntity;
 @Transactional
 public class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
 
-	@PersistenceContext(unitName = "pgsqll")
+	@PersistenceContext
 	private EntityManager entityManager;
 
 	@Override

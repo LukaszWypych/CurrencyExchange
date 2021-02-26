@@ -18,7 +18,7 @@ import pl.streamsoft.currencyexchange.entity.CurrencyEntity;
 @Transactional
 public class CurrencyRepositoryImpl implements CurrencyRepository {
 
-	@PersistenceContext(unitName = "pgsqll")
+	@PersistenceContext
 	private EntityManager entityManager;
 
 	@Override

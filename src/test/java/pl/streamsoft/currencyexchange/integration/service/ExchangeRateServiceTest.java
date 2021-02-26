@@ -8,10 +8,6 @@
 //import java.util.Date;
 //import java.util.List;
 //
-//import javax.persistence.EntityManagerFactory;
-//import javax.persistence.Persistence;
-//
-//import org.junit.jupiter.api.BeforeAll;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //
@@ -21,7 +17,6 @@
 //import pl.streamsoft.currencyexchange.repository.CountryRepositoryImpl;
 //import pl.streamsoft.currencyexchange.repository.CurrencyRepository;
 //import pl.streamsoft.currencyexchange.repository.CurrencyRepositoryImpl;
-//import pl.streamsoft.currencyexchange.repository.EntityManagerFactoryHelper;
 //import pl.streamsoft.currencyexchange.repository.ExchangeRateRepository;
 //import pl.streamsoft.currencyexchange.repository.ExchangeRateRepositoryImpl;
 //import pl.streamsoft.currencyexchange.service.ExchangeRateService;
