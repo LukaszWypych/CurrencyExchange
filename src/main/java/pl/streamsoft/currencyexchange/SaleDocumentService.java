@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashSet;
 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
 import pl.streamsoft.currencyexchange.repository.CountryRepository;
 import pl.streamsoft.currencyexchange.repository.CountryRepositoryImpl;
 import pl.streamsoft.currencyexchange.repository.CurrencyRepository;
@@ -34,9 +36,12 @@ public class SaleDocumentService {
 		ExchangeRateRepository exchangeRateRepository = new ExchangeRateRepositoryImpl();
 		CurrencyRepository currencyRepository = new CurrencyRepositoryImpl();
 		CountryRepository countryRepository = new CountryRepositoryImpl();
-		ExchangeRateService service = new ExchangeRateService(currencyRepository, exchangeRateRepository,
-				countryRepository);
+//		ExchangeRateService service = new ExchangeRateService(currencyRepository, exchangeRateRepository,
+//				countryRepository);
 
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+		ExchangeRateService service = context.getBean(ExchangeRateService.class);
+		context.close();
 		DataReader dataReader = new DataReaderNBP("json");
 		DataReader dataReader2 = new DataReaderFile("C", "json");
 		Converter converter = new ConverterJson();

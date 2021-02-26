@@ -5,6 +5,7 @@
     <persistence-unit name="pgsql" transaction-type="RESOURCE_LOCAL">
         <!--        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>-->
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>pl.streamsoft.currencyexchange.Config</class>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <property name="javax.persistence.jdbc.url"

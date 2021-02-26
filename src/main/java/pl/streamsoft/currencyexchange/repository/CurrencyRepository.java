@@ -3,8 +3,11 @@ package pl.streamsoft.currencyexchange.repository;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.stereotype.Repository;
+
 import pl.streamsoft.currencyexchange.entity.CurrencyEntity;
 
+@Repository
 public interface CurrencyRepository {
 
 	public void addCurrency(CurrencyEntity currency);

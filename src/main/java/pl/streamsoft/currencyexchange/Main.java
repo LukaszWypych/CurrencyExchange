@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashSet;
 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
 import pl.streamsoft.currencyexchange.entity.CurrencyEntity;
 import pl.streamsoft.currencyexchange.repository.CountryRepository;
 import pl.streamsoft.currencyexchange.repository.CountryRepositoryImpl;
@@ -24,8 +26,11 @@ public class Main {
 		ExchangeRateRepository exchangeRateRepository = new ExchangeRateRepositoryImpl();
 		CurrencyRepository currencyRepository = new CurrencyRepositoryImpl();
 		CountryRepository countryRepository = new CountryRepositoryImpl();
-		ExchangeRateService service = new ExchangeRateService(currencyRepository, exchangeRateRepository,
-				countryRepository);
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+		ExchangeRateService service = context.getBean(ExchangeRateService.class);
+		context.close();
+//		ExchangeRateService service = new ExchangeRateService(currencyRepository, exchangeRateRepository,
+//				countryRepository);
 		DataReader dataReader = new DataReaderNBP("json");
 		Converter converter = new ConverterJson();
 		LinkedHashSet<DataReader> dataReaders = new LinkedHashSet<>();

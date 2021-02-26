@@ -3,51 +3,57 @@ package pl.streamsoft.currencyexchange.repository;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+
+import org.springframework.stereotype.Repository;
 
 import pl.streamsoft.currencyexchange.entity.CountryEntity;
 
+@Repository
 public class CountryRepositoryImpl implements CountryRepository {
 
-	private EntityManager getEntityManager() {
-		return EntityManagerFactoryHelper.getFactory().createEntityManager();
-	}
+//	private EntityManager getEntityManager() {
+//		return EntityManagerFactoryHelper.getFactory().createEntityManager();
+//	}
+	@PersistenceContext(unitName = "pgsqll")
+	private EntityManager entityManager;
 
 	@Override
 	public void addCountry(CountryEntity country) {
-		EntityManager entityManager = getEntityManager();
+		// EntityManager entityManager = getEntityManager();
 		entityManager.getTransaction().begin();
 		entityManager.persist(country);
 		entityManager.getTransaction().commit();
-		entityManager.close();
+		// entityManager.close();
 	}
 
 	@Override
 	public CountryEntity getCountryByName(String name) {
-		EntityManager entityManager = getEntityManager();
+		// EntityManager entityManager = getEntityManager();
 		TypedQuery<CountryEntity> query = entityManager.createNamedQuery("Country.getByName", CountryEntity.class);
 		query.setParameter("name", name);
 		CountryEntity result = query.getSingleResult();
-		entityManager.close();
+		// entityManager.close();
 		return result;
 	}
 
 	@Override
 	public List<CountryEntity> getAllCountries() {
-		EntityManager entityManager = getEntityManager();
+		// EntityManager entityManager = getEntityManager();
 		TypedQuery<CountryEntity> query = entityManager.createNamedQuery("Country.getAll", CountryEntity.class);
 		List<CountryEntity> resultList = query.getResultList();
-		entityManager.close();
+		// entityManager.close();
 		return resultList;
 	}
 
 	public List<CountryEntity> getCountriesWithMultipleCurrencies(int amount) {
-		EntityManager entityManager = getEntityManager();
+		// EntityManager entityManager = getEntityManager();
 		TypedQuery<CountryEntity> query = entityManager.createNamedQuery("Country.getByCurrenciesAmount",
 				CountryEntity.class);
 		query.setParameter("amount", amount);
 		List<CountryEntity> result = query.getResultList();
-		entityManager.close();
+		// entityManager.close();
 		return result;
 	}
 }

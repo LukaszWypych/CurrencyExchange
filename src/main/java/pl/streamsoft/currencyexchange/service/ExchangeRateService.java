@@ -6,6 +6,9 @@ import java.util.List;
 
 import javax.persistence.NoResultException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.neovisionaries.i18n.CountryCode;
 import com.neovisionaries.i18n.CurrencyCode;
 
@@ -17,20 +20,24 @@ import pl.streamsoft.currencyexchange.repository.CountryRepository;
 import pl.streamsoft.currencyexchange.repository.CurrencyRepository;
 import pl.streamsoft.currencyexchange.repository.ExchangeRateRepository;
 
+@Service
 public class ExchangeRateService {
 
+	@Autowired
 	private CurrencyRepository currencyRepository;
 
+	@Autowired
 	private ExchangeRateRepository exchangeRateRepository;
 
+	@Autowired
 	private CountryRepository countryRepository;
 
-	public ExchangeRateService(CurrencyRepository currencyRepository, ExchangeRateRepository exchangeRateRepository,
-			CountryRepository countryRepository) {
-		this.currencyRepository = currencyRepository;
-		this.exchangeRateRepository = exchangeRateRepository;
-		this.countryRepository = countryRepository;
-	}
+//	public ExchangeRateService(CurrencyRepository currencyRepository, ExchangeRateRepository exchangeRateRepository,
+//			CountryRepository countryRepository) {
+////		this.currencyRepository = currencyRepository;
+////		this.exchangeRateRepository = exchangeRateRepository;
+////		this.countryRepository = countryRepository;
+//	}
 
 	public void addExchangeRate(ExchangeRateEntity rate, String currencyCode) {
 		if (rate.getCurrency() == null) {
